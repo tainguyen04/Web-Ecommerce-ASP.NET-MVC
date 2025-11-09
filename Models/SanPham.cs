@@ -36,6 +36,6 @@ namespace QLCHBanDienThoaiMoi.Models
         public ICollection<ChiTietHoaDonNhap> ChiTietHoaDonNhaps { get; set; } = new List<ChiTietHoaDonNhap>();
         public ICollection<ChiTietHoaDonBan> ChiTietHoaDonBans { get; set; } = new List<ChiTietHoaDonBan>();
         
-        public ICollection<GioHang> GioHangs { get; set; } = new List<GioHang>();
+        public ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; } = new List<ChiTietGioHang>();
     }
 }

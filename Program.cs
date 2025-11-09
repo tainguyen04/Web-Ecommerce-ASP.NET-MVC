@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using QLCHBanDienThoaiMoi.Data;
+using QLCHBanDienThoaiMoi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,12 +11,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.Scan(scan => scan
-    .FromAssemblyOf<Program>()
-    .AddClasses(classes => classes.InNamespaces("QLCHBanDienThoaiMoi.Services"))
-    .AsSelf()
-    .WithScopedLifetime());
-
+//builder.Services.Scan(scan => scan
+//    .FromAssemblyOf<Program>()
+//    .AddClasses(classes => classes.InNamespaces("QLCHBanDienThoaiMoi.Services"))
+//    .AsSelf()
+//    .WithScopedLifetime());
+builder.Services.AddScoped<SanPhamService>();
+builder.Services.AddScoped<GioHangService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 var app = builder.Build();

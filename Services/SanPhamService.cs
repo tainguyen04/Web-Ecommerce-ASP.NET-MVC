@@ -18,8 +18,14 @@ namespace QLCHBanDienThoaiMoi.Services
         public async Task<List<SanPham>> GetSanPhamsAsync()
         {
             var sanPhams = await _context.SanPham
-                                        .Include(s => s.DanhMucSanPham)
-                                        .Include(s => s.KhuyenMai)
+                                        .Select(s => new SanPham 
+                                        { 
+                                            Id = s.Id,
+                                            TenSanPham = s.TenSanPham,
+                                            GiaBan = s.GiaBan,
+                                            HinhAnh = s.HinhAnh,
+                                            
+                                        })
                                         .AsNoTracking()
                                         .ToListAsync();
             return sanPhams;
