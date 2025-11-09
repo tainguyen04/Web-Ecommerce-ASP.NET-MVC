@@ -13,11 +13,9 @@ namespace QLCHBanDienThoaiMoi.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly SanPhamService _sanPhamService;
-        public HomeController(ApplicationDbContext context,SanPhamService sanPhamService)
+        public HomeController(SanPhamService sanPhamService)
         {
-            _context = context;
             _sanPhamService = sanPhamService;
         }
 

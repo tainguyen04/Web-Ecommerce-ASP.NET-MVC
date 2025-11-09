@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext
     // DbSet cho tất cả entity
     public DbSet<ChiTietHoaDonBan> ChiTietHoaDonBan { get; set; }
     public DbSet<ChiTietHoaDonNhap> ChiTietHoaDonNhap { get; set; }
+    public DbSet<ChiTietGioHang> ChiTietGioHang { get; set; }
     public DbSet<DanhMucSanPham> DanhMucSanPham { get; set; }
     public DbSet<GioHang> GioHang { get; set; }
     public DbSet<HoaDonNhap> HoaDonNhap { get; set; }
@@ -60,6 +61,17 @@ public class ApplicationDbContext : DbContext
             .WithOne(p => p.ChiTietHoaDonBan) // Mối quan hệ 1-1
             .HasForeignKey<PhieuBaoHanh>(p => new { p.HoaDonBanId, p.SanPhamId })
             .IsRequired(false); // Nullable
+        // ChiTietGioHang
+        modelBuilder.Entity<ChiTietGioHang>()
+            .HasKey(ct => new { ct.GioHangId, ct.SanPhamId });
+        modelBuilder.Entity<ChiTietGioHang>()
+            .HasOne(ct => ct.GioHang)
+            .WithMany(g => g.ChiTietGioHangs)
+            .HasForeignKey(ct => ct.GioHangId);
+        modelBuilder.Entity<ChiTietGioHang>()
+            .HasOne(ct => ct.SanPham)
+            .WithMany(s => s.ChiTietGioHangs)
+            .HasForeignKey(ct => ct.SanPhamId);
 
         // DanhMucSanPham
         modelBuilder.Entity<DanhMucSanPham>()
@@ -78,11 +90,11 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(g => g.KhachHangId)
             .IsRequired(false);
         modelBuilder.Entity<GioHang>()
-            .HasOne(g => g.SanPham)
-            .WithMany(s => s.GioHangs)
-            .HasForeignKey(g => g.SanPhamId);
+            .HasMany(g => g.ChiTietGioHangs)
+            .WithOne(ct => ct.GioHang)
+            .HasForeignKey(ct => ct.GioHangId);
 
-
+       
         // HoaDonNhap
         modelBuilder.Entity<HoaDonNhap>()
             .HasKey(h => h.Id);
@@ -165,7 +177,7 @@ public class ApplicationDbContext : DbContext
             .WithOne(ct => ct.SanPham)
             .HasForeignKey(ct => ct.SanPhamId);
         modelBuilder.Entity<SanPham>()
-            .HasMany(s => s.GioHangs)
+            .HasMany(s => s.ChiTietGioHangs)
             .WithOne(g => g.SanPham)
             .HasForeignKey(g => g.SanPhamId);
         modelBuilder.Entity<SanPham>()
