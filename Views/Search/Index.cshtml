@@ -1,0 +1,30 @@
+﻿@model IEnumerable<QLCHBanDienThoaiMoi.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Kết quả tìm kiếm";
+}
+
+<h2>Kết quả tìm kiếm cho: "@ViewBag.Keyword"</h2>
+
+@if (!Model.Any())
+{
+    <p>Không tìm thấy sản phẩm nào phù hợp.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var sp in Model)
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <img src="~/images/@sp.HinhAnh" class="card-img-top" alt="@sp.TenSanPham" />
+                    <div class="card-body">
+                        <h5 class="card-title">@sp.TenSanPham</h5>
+                        <p>Giá bán: @sp.GiaBan.ToString("N0") đ</p>
+                        <a href="@Url.Action("Details", "SanPham", new { id = sp.Id })" class="btn btn-primary btn-sm">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

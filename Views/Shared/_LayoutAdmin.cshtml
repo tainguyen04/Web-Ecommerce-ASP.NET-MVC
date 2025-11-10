@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Panel</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/siteadmin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/QLCHBanDienThoaiMoi.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <!-- 1. NAVBAR -->
+        <nav class="admin-navbar">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h4 class="mb-0 text-gold">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            @ViewData["Title"]
+                        </h4>
+                    </div>
+                    <div class="col-auto">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-gold dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-2"></i>Admin User
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 2. SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <h3><i class="fas fa-crown"></i> ADMIN</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <!-- Quản lý Sản Phẩm -->
+                <div class="nav-section">
+                    <a class="nav-link accordion-button collapsed bg-transparent shadow-none py-3 text-white"
+                       data-bs-toggle="collapse"
+                       href="#productManagement"
+                       role="button">
+                        <i class="fas fa-box me-2"></i>
+                        <span class="flex-grow-1 text-start">Quản lý Sản Phẩm</span>
+                        <i class="fas fa-chevron-down ms-2 small"></i>
+                    </a>
+                    <div class="collapse" id="productManagement">
+                        <div class="submenu">
+                            <a class="nav-link" asp-area="Admin" asp-controller="DanhMucSanPhams" asp-action="Index">
+                                <i class="fas fa-list"></i>
+                                <span>Danh mục</span>
+                            </a>
+                            <a class="nav-link" asp-area="Admin" asp-controller="SanPhams" asp-action="Index">
+                                <i class="fas fa-cube"></i>
+                                <span>Sản phẩm</span>
+                            </a>
+                            <a class="nav-link" asp-area="Admin" asp-controller="KhuyenMais" asp-action="Index">
+                                <i class="fas fa-percentage"></i>
+                                <span>Khuyến mãi</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quản lý Bán hàng -->
+                <div class="nav-section">
+                    <a class="nav-link accordion-button collapsed bg-transparent shadow-none py-3 text-white" 
+                        data-bs-toggle="collapse" 
+                        href="#salesManagement" 
+                        role="button">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Quản lý Bán hàng</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="salesManagement">
+                        <div class="submenu">
+                            <a class="nav-link" asp-area="Admin" asp-controller="KhachHang" asp-action="Index">
+                                <i class="fas fa-users"></i>
+                                <span>Khách hàng</span>
+                            </a>
+                            <a class="nav-link" asp-area="Admin" asp-controller="DonHang" asp-action="Index">
+                                <i class="fas fa-receipt"></i>
+                                <span>Đơn hàng</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quản lý Nhập hàng -->
+                <div class="nav-section">
+                    <a class="nav-link accordion-button collapsed bg-transparent shadow-none py-3 text-white" 
+                        data-bs-toggle="collapse" 
+                        href="#importManagement" 
+                        role="button">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Quản lý Nhập hàng</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="importManagement">
+                        <div class="submenu">
+                            <a class="nav-link" asp-area="Admin" asp-controller="NhaCungCap" asp-action="Index">
+                                <i class="fas fa-truck"></i>
+                                <span>Nhà cung cấp</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <a class="nav-link" asp-area="Admin" asp-controller="ThongKe" asp-action="Index">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Thống Kê</span>
+                </a>
+                <a class="nav-link" asp-area="Admin" asp-controller="CaiDat" asp-action="Index">
+                    <i class="fas fa-cog"></i>
+                    <span>Cài Đặt</span>
+                </a>
+                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-home"></i>
+                    <span>Về Trang Chủ</span>
+                </a>
+            </nav>
+        </div>
+        
+    </header>
+    <!-- 3. MAIN CONTENT (RenderBody) -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- 4. FOOTER -->
+    <footer class="admin-footer">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col">
+                    &copy; 2024 - QLCHBanDienThoaiMoi - Admin Panel
+                </div>
+                <div class="col-auto">
+                    <span class="text-gold">
+                        <i class="fas fa-heart"></i> Made with passion
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,296 @@
+﻿:root {
+    --bg-dark: #0a1929;
+    --bg-darker: #06121f;
+    --primary: #ffd700;
+    --text-light: #ffffff;
+    --sidebar-width: 250px;
+}
+
+body {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, #0c2a4a 100%);
+    color: var(--text-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* 1. NAVBAR */
+.admin-navbar {
+    background: var(--bg-darker);
+    border-bottom: 2px solid var(--primary);
+    padding: 0.8rem 0;
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    z-index: 1030;
+    height: 60px;
+}
+
+/* 2. SIDEBAR */
+.sidebar {
+    background: var(--bg-darker);
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    border-right: 2px solid var(--primary);
+    box-shadow: 3px 0 15px rgba(0,0,0,0.3);
+    z-index: 1040;
+}
+
+.sidebar-brand {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255,215,0,0.2);
+    text-align: center;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .sidebar-brand h3 {
+        color: var(--primary);
+        font-weight: bold;
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+
+.sidebar-nav {
+    height: calc(100vh - 60px); /* Chiều cao */
+    overflow-y: auto; /* Cho phép scroll */
+    padding: 1.5rem 0; /* Padding trên dưới */
+    /* Ẩn thanh cuộn tinh tế */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+    .sidebar-nav::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+    }
+/* Ẩn arrow mặc định của Bootstrap */
+/* CHỈ CẦN 2 DÒNG NÀY */
+.accordion-button:not(.collapsed) .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.fa-chevron-down {
+    transition: transform 0.3s ease;
+}
+.nav-link {
+    color: var(--text-light) !important;
+    padding: 1rem 1.5rem;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    margin: 0.2rem 0.5rem;
+    border-radius: 5px;
+}
+
+    .nav-link:hover, .nav-link.active {
+        background: rgba(255,215,0,0.1);
+        border-left-color: var(--primary);
+        color: var(--primary) !important;
+    }
+
+    .nav-link i {
+        width: 20px;
+        margin-right: 10px;
+        color: var(--primary);
+    }
+    .nav-link.accordion-button span {
+        white-space: nowrap;
+        flex: 1;
+        
+    }
+
+/* 3. MAIN CONTENT (RenderBody) */
+.main-content {
+    margin-left: var(--sidebar-width);
+    margin-top: 60px; /* Height của navbar */
+    padding: 20px;
+    min-height: calc(100vh - 120px); /* Trừ navbar và footer */
+}
+
+/* 4. FOOTER */
+.admin-footer {
+    background: var(--bg-darker);
+    border-top: 2px solid var(--primary);
+    color: var(--text-light);
+    padding: 1rem 0;
+    margin-left: var(--sidebar-width);
+    position: relative;
+    z-index: 1020;
+}
+
+/* Content Styling */
+.content-wrapper {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 2rem;
+    border: 1px solid rgba(255,215,0,0.2);
+    backdrop-filter: blur(10px);
+}
+
+/* Cards */
+.stats-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+    }
+
+    .stats-card .card-icon {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .stats-card h3 {
+        color: var(--primary);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+/* Tables */
+.admin-table {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,215,0,0.2);
+}
+
+    .admin-table th {
+        background: rgba(255,215,0,0.1);
+        color: var(--primary);
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+    }
+
+    .admin-table td {
+        border-color: rgba(255,215,0,0.1);
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+/* Buttons */
+.btn-gold {
+    background: var(--primary);
+    color: var(--bg-dark);
+    border: none;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .btn-gold:hover {
+        background: #ffed4a;
+        transform: scale(1.05);
+    }
+
+.btn-outline-gold {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .btn-outline-gold:hover {
+        background: var(--primary);
+        color: var(--bg-dark);
+    }
+
+/* Badges */
+.badge-gold {
+    background: var(--primary);
+    color: var(--bg-dark);
+    font-weight: 600;
+    padding: 0.5em 0.75em;
+}
+
+/* Text Colors */
+.text-gold {
+    color: var(--primary) !important;
+}
+
+.text-light {
+    color: var(--text-light) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+    }
+
+        .sidebar .nav-link span {
+            display: none;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 0;
+            font-size: 1.2rem;
+        }
+
+    .admin-navbar {
+        left: 70px;
+    }
+
+    .main-content {
+        margin-left: 70px;
+    }
+
+    .admin-footer {
+        margin-left: 70px;
+    }
+
+    .sidebar-brand h3 {
+        font-size: 1rem;
+    }
+}
+
+/* Form Styling */
+.admin-form {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 2rem;
+    border: 1px solid rgba(255,215,0,0.2);
+}
+
+.form-control {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: var(--text-light);
+}
+
+    .form-control:focus {
+        background: rgba(255,255,255,0.15);
+        border-color: var(--primary);
+        color: var(--text-light);
+        box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+    }
+
+.form-label {
+    color: var(--primary);
+    font-weight: 600;
+}
