@@ -4,21 +4,21 @@ namespace QLCHBanDienThoaiMoi.Models
 {
     public class PhieuBaoHanh
     {
-        public int Id { get; set; }
-
         public int HoaDonBanId { get; set; }
         public int SanPhamId { get; set; }
 
-        public DateTime NgayLap { get; set; }
-        public DateTime NgayHetHan { get; set; }
+        public DateTime NgayLap { get; set; } = DateTime.Now;
+        public DateTime NgayHetHan { get; set; } = DateTime.Now.AddMonths(12);
         public string? MoTa { get; set; }
         public TrangThaiBaoHanh TrangThai { get; set; } = TrangThaiBaoHanh.DangBaoHanh;
-        
-        public required ChiTietHoaDonBan ChiTietHoaDonBan { get; set; } 
+
+        public ChiTietHoaDonBan ChiTietHoaDonBan { get; set; } = null!;
+       
 
     }
     public enum TrangThaiBaoHanh
     {
-        DangBaoHanh,HetHan
+        DangBaoHanh,
+        HetHan
     }
 }

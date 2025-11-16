@@ -58,12 +58,33 @@ body {
         font-size: 1.3rem;
     }
 
+
 .sidebar-nav {
-    height: calc(100vh - 60px);
-    overflow-y: auto;
-    padding: 1rem 0;
+    height: calc(100vh - 60px); /* Chiều cao */
+    overflow-y: auto; /* Cho phép scroll */
+    padding: 1.5rem 0; /* Padding trên dưới */
+    /* Ẩn thanh cuộn tinh tế */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
+    .sidebar-nav::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+    }
+/* Ẩn arrow mặc định của Bootstrap */
+/* CHỈ CẦN 2 DÒNG NÀY */
+.accordion-button:not(.collapsed) .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.fa-chevron-down {
+    transition: transform 0.3s ease;
+}
 .nav-link {
     color: var(--text-light) !important;
     padding: 1rem 1.5rem;
@@ -83,6 +104,11 @@ body {
         width: 20px;
         margin-right: 10px;
         color: var(--primary);
+    }
+    .nav-link.accordion-button span {
+        white-space: nowrap;
+        flex: 1;
+        
     }
 
 /* 3. MAIN CONTENT (RenderBody) */

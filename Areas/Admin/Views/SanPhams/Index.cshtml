@@ -49,9 +49,9 @@
                         </td>
                         <td class="text-center">@item.DanhMucSanPham?.TenDanhMuc</td>
                         <td class="text-end">
-                            @if (item.KhuyenMai > 0)
+                            @if ((item.KhuyenMai?.GiaTri ?? 0) > 0)
                             {
-                                <span class="badge bg-success text-end">@item.KhuyenMai%</span>
+                                <span class="badge bg-success text-end">@item.KhuyenMai?.GiaTri%</span>
                             }
                             else
                             {

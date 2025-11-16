@@ -4,15 +4,11 @@ namespace QLCHBanDienThoaiMoi.Models
 {
     public class GioHang
     {
-        public int KhachHangId { get; set; }
+        public int Id { get; set; }
+        public int? KhachHangId { get; set; }
         public KhachHang? KhachHang { get; set; } 
-        public int SanPhamId { get; set; }
-        public SanPham? SanPham { get; set; } 
-        public int SoLuong { get; set; }
-        public ICollection<GioHang> GioHangs { get; set; } = new List<GioHang>();
-        public ICollection<HoaDonBan> HoaDonBans { get; set; } = new List<HoaDonBan>();
-
-        [NotMapped]
-        public int ThanhTien => SoLuong * (SanPham?.GiaBan ?? 0);
+        public string? SessionId { get; set; }
+        public DateTime NgayTao { get; set; }
+        public ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; } = new List<ChiTietGioHang>();
     }
 }

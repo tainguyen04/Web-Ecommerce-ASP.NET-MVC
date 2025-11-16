@@ -4,7 +4,6 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
 <h2 class="card-title text-primary" style="margin-bottom:5px;">@Model.TenSanPham</h2>
 <div class="row">
     <div class="col-md-6">
@@ -38,13 +37,13 @@
                     </div>
                 </div>
                 <div class="mb-2 border-top pb-2">
-                    @if (Model.KhuyenMai > 0)
+                    @if (Model.KhuyenMai.GiaTri > 0)
                     {
                         <!-- Có khuyến mãi -->
                         <div class="d-flex align-items-center gap-2 mb-2 fst-italic">
-                            <h3 class="text-danger mb-0">@Html.FormatPrice(Model.GiaBan * (100 - Model.KhuyenMai) / 100)</h3>
+                            <h3 class="text-danger mb-0">@Html.FormatPrice(Model.GiaBan * (100 - Model.KhuyenMai.GiaTri) / 100)</h3>
                             <span class="text-muted text-decoration-line-through fs-5">@Html.FormatPrice(Model.GiaBan)</span>
-                            <span class="badge bg-danger fs-6 fw-bold">-@Model.KhuyenMai%</span>
+                            <span class="badge bg-danger fs-6 fw-bold">-@Model.KhuyenMai.GiaTri%</span>
 
                         </div>
                     }
