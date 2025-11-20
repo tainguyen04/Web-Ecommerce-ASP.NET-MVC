@@ -78,9 +78,6 @@ namespace QLCHBanDienThoaiMoi.Services
             {
                 return false;
             }
-            // Cập nhật các thuộc tính trước khi xử lý ảnh
-            _context.Entry(existingSanPham).CurrentValues.SetValues(sanPham);
-
             if (file != null && file.Length > 0)
             {
                 if(!string.IsNullOrEmpty(existingSanPham.HinhAnh) && existingSanPham.HinhAnh != "default.png")
@@ -94,6 +91,9 @@ namespace QLCHBanDienThoaiMoi.Services
                 var newFileName = await UploadFileAsync(file);
                 existingSanPham.HinhAnh = newFileName;
             }
+            sanPham.HinhAnh = existingSanPham.HinhAnh;
+            // Cập nhật các thuộc tính trước khi xử lý ảnh
+            _context.Entry(existingSanPham).CurrentValues.SetValues(sanPham);
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }

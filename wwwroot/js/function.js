@@ -1,19 +1,22 @@
-﻿
-//Chức năng xem trước ảnh khi tải lên
-function previewImage(event) {
+﻿//Chức năng xem trước ảnh khi tải lên
+function previewImage(input) {
     const reader = new FileReader();
     reader.onload = function () {
         const output = document.getElementById('imagePreview');
         output.src = reader.result;
     };
+    if (input.files && input.files[0]) {
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 
 // Hàm xác nhận xóa
-function confirmDelete(button, entityName) {
+function confirmDelete(event,button, entityName) {
+    event.preventDefault();
     Swal.fire({
         icon: 'error',
         title: 'Bạn có chắc muốn xóa?',
-        html: 'Bạn có chắc muốn xóa "<b>' + entityName + '</b>" khỏi giỏ hàng không?',
+        html: 'Bạn có chắc muốn xóa "<b>' + entityName + '</b>" không?',
         showCancelButton: true,
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy'
@@ -33,6 +36,6 @@ if (typeof ThongBao !== 'undefined' && ThongBao) {
         timerProgressBar: true,
         showConfirmButton: false,
         background: "#d4edda",
-        timer: 1500
+        timer: 1500,
     });
 }
