@@ -10,29 +10,6 @@
         <i class="fas fa-plus me-2"></i>Thêm sản phẩm mới
     </a>
 </div>
-<div class="modal fade" id="addSanPham">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title fw-bold">Thêm sản phẩm</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-                Modal body..
-            </div>
-
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Thêm</button>
-            </div>
-
-        </div>
-    </div>
-</div>
 <div class="admin-table">
     <div class="table-responsive">
         <table class="table table-hover mb-0">
@@ -44,7 +21,7 @@
                     <th width="110">Tồn kho</th>
                     <th width="120">Danh mục</th>
                     <th width="120">Khuyến mãi</th>
-                    <th width="150">Thao tác</th>
+                    <th width="150">Tùy chỉnh</th>
                 </tr>
             </thead>
             <tbody>
@@ -79,17 +56,33 @@
                             }
                         </td>
                         <td class="text-center">
-                            <div class="btn-group btn-group-sm column-gap-sm-1">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning" title="Sửa">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Chi tiết">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="Xóa">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                            <div class="dropdown">
+                                <button class="btn btn-link btn-sm text-muted p-0" type="button"
+                                        data-bs-toggle="dropdown" title="Thao tác" style="border: none; background: none;">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end position-absolute">
+                                    <li>
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">
+                                            <i class="fas fa-edit me-2"></i>Sửa
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">
+                                            <i class="fas fa-eye me-2"></i>Chi tiết
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item text-danger" title="Xóa"
+                                                    onclick="confirmDelete(event,this, '@item.TenSanPham')">
+                                                <i class="fas fa-trash me-2"></i>Xóa
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
+                                
                         </td>
                     </tr>
                 }

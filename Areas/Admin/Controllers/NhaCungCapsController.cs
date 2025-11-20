@@ -12,73 +12,73 @@ using QLCHBanDienThoaiMoi.Services;
 namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class KhuyenMaisController : Controller
+    public class NhaCungCapsController : Controller
     {
-        private readonly KhuyenMaiService _khuyenMaiService;
+        private readonly NhaCungCapService _nhaCungCapService;
 
-        public KhuyenMaisController(KhuyenMaiService khuyenMaiService)
+        public NhaCungCapsController(NhaCungCapService nhaCungCapService)
         {
-            _khuyenMaiService = khuyenMaiService;
+            _nhaCungCapService = nhaCungCapService;
         }
 
-        // GET: Admin/KhuyenMais
+        // GET: Admin/NhaCungCaps
         public async Task<IActionResult> Index()
         {
-            return View(await _khuyenMaiService.GetAllKhuyenMaiAsync());
+            return View(await _nhaCungCapService.GetAllNhaCungCapAsync());
         }
-        //GET: Admin/KhuyenMais/Details/5
+        //GET: Admin/NhaCungCaps/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var khuyenMai = await _khuyenMaiService.GetKhuyenMaiById(id);
-            if (khuyenMai == null)
+            var nhaCungCap = await _nhaCungCapService.GetNhaCungCapById(id);
+            if (nhaCungCap == null)
             {
                 return NotFound();
             }
-            return View(khuyenMai);
+            return View(nhaCungCap);
         }
-        // POST: Admin/KhuyenMais/Create
+
+        // POST: Admin/NhaCungCaps/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TenKhuyenMai,MoTa,LoaiKhuyenMai,NgayBatDau,NgayKetThuc,GiaTri")] KhuyenMai khuyenMai)
+        public async Task<IActionResult> Create([Bind("Id,TenNCC,DiaChi,SoDienThoai,Email")] NhaCungCap nhaCungCap)
         {
             if (ModelState.IsValid)
             {
-                var result = await _khuyenMaiService.CreateKhuyenMaiAsync(khuyenMai);
-                if (result)
+                var result = await _nhaCungCapService.CreateNhaCungCapAsync(nhaCungCap);
+                if (!result)
                 {
-                    TempData["SuccessMessage"] = "Thêm khuyến mãi thành công!";
-                    return RedirectToAction(nameof(Index));
+                    return NotFound();
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Có lỗi xảy ra khi thêm khuyến mãi.");
+                    TempData["SuccessMessage"] = "Thêm nhà cung cấp thành công!";
+                    return RedirectToAction(nameof(Index));
                 }
-                    
             }
-            return View(khuyenMai);
+            return View(nhaCungCap);
         }
 
-        // GET: Admin/KhuyenMais/Edit/5
+        // GET: Admin/NhaCungCaps/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var khuyenMai = await _khuyenMaiService.GetKhuyenMaiById(id);
-            if (khuyenMai == null)
+            var nhaCungCap = await _nhaCungCapService.GetNhaCungCapById(id);
+            if (nhaCungCap == null)
             {
                 return NotFound();
             }
-            return View(khuyenMai);
+            return View(nhaCungCap);
         }
 
-        // POST: Admin/KhuyenMais/Edit/5
+        // POST: Admin/NhaCungCaps/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TenKhuyenMai,MoTa,LoaiKhuyenMai,NgayBatDau,NgayKetThuc,GiaTri")] KhuyenMai khuyenMai)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TenNCC,DiaChi,SoDienThoai,Email")] NhaCungCap nhaCungCap)
         {
-            if (id != khuyenMai.Id)
+            if (id != nhaCungCap.Id)
             {
                 return NotFound();
             }
@@ -87,14 +87,14 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
             {
                 try
                 {
-                    var result = await _khuyenMaiService.UpdateKhuyenMaiAsync(khuyenMai);
-                    if (!result)
+                    var ncc = await _nhaCungCapService.UpdateNhaCungCapAsync(nhaCungCap);
+                    if (!ncc)
                     {
-                        ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật khuyến mãi.");
+                        return NotFound();
                     }
                     else
                     {
-                        TempData["SuccessMessage"] = "Cập nhật khuyến mãi thành công!";
+                        TempData["SuccessMessage"] = "Cập nhật nhà cung cấp thành công!";
                         return RedirectToAction(nameof(Index));
                     }
                 }
@@ -103,16 +103,21 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
                     return NotFound();
                 }
             }
-            return View(khuyenMai);
+            return View(nhaCungCap);
         }
 
-        // POST: Admin/KhuyenMais/Delete/5
+       
+        // POST: Admin/NhaCungCaps/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _khuyenMaiService.DeleteKhuyenMaiAsync(id);
-            return RedirectToAction(nameof(Index));
+            var nhaCungCap = await _nhaCungCapService.DeleteNhaCungCapAsync(id);
+            if (!nhaCungCap)
+            {
+                return NotFound();
+            }
+                return RedirectToAction(nameof(Index));
         }
     }
 }

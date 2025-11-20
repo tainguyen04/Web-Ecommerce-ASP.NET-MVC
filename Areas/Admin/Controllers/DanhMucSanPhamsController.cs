@@ -7,49 +7,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using QLCHBanDienThoaiMoi.Data;
 using QLCHBanDienThoaiMoi.Models;
+using QLCHBanDienThoaiMoi.Services;
 
 namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class DanhMucSanPhamsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DanhMucSanPhamService _danhMucSanPhamService;
 
-        public DanhMucSanPhamsController(ApplicationDbContext context)
+        public DanhMucSanPhamsController(DanhMucSanPhamService danhMucSanPhamService)
         {
-            _context = context;
+            _danhMucSanPhamService = danhMucSanPhamService;
         }
 
         // GET: DanhMucSanPhams
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DanhMucSanPham.ToListAsync());
+            return View(await _danhMucSanPhamService.GetAllDanhMucSanPhamAsync());
         }
-
-        // GET: DanhMucSanPhams/Details/5
-        public async Task<IActionResult> Details(int? id)
+        //GERT: Admin/DanhMucSanPhams/Details/5
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var danhMucSanPham = await _context.DanhMucSanPham
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var danhMucSanPham = await _danhMucSanPhamService.GetDanhMucSanPhamByIdAsync(id);
             if (danhMucSanPham == null)
             {
                 return NotFound();
             }
-
             return View(danhMucSanPham);
         }
-
-        // GET: DanhMucSanPhams/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // POST: DanhMucSanPhams/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -57,28 +43,26 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,TenDanhMuc")] DanhMucSanPham danhMucSanPham)
         {
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
             if (ModelState.IsValid)
             {
-                _context.Add(danhMucSanPham);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var dm = await _danhMucSanPhamService.AddDanhMucSanPhamAsync(danhMucSanPham);
+                if (!dm)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Thêm danh mục sản phẩm thành công!";
+                    return RedirectToAction(nameof(Index));
+                }
             }
             return View(danhMucSanPham);
         }
 
         // GET: DanhMucSanPhams/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var danhMucSanPham = await _context.DanhMucSanPham.FindAsync(id);
+            var danhMucSanPham = await _danhMucSanPhamService.GetDanhMucSanPhamByIdAsync(id);
             if (danhMucSanPham == null)
             {
                 return NotFound();
@@ -102,40 +86,23 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(danhMucSanPham);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DanhMucSanPhamExists(danhMucSanPham.Id))
+                    var dm = await _danhMucSanPhamService.UpdateDanhMucSanPhamAsync(danhMucSanPham);
+                    if (!dm)
                     {
                         return NotFound();
                     }
                     else
                     {
-                        throw;
+                        TempData["SuccessMessage"] = "Cập nhật danh mục sản phẩm thành công!";
+                        return RedirectToAction(nameof(Index));
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (DbUpdateConcurrencyException)
+                {
+                    return NotFound();
+                }
+                
             }
-            return View(danhMucSanPham);
-        }
-
-        // GET: DanhMucSanPhams/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var danhMucSanPham = await _context.DanhMucSanPham
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (danhMucSanPham == null)
-            {
-                return NotFound();
-            }
-
             return View(danhMucSanPham);
         }
 
@@ -144,19 +111,17 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var danhMucSanPham = await _context.DanhMucSanPham.FindAsync(id);
-            if (danhMucSanPham != null)
+            var dm = await _danhMucSanPhamService.DeleteDanhMucSanPhamAsync(id);
+            if (!dm)
             {
-                _context.DanhMucSanPham.Remove(danhMucSanPham);
+                return NotFound();
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        private bool DanhMucSanPhamExists(int id)
-        {
-            return _context.DanhMucSanPham.Any(e => e.Id == id);
-        }
+        
     }
 }

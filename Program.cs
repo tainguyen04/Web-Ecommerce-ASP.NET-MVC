@@ -23,6 +23,11 @@ builder.Services.AddScoped<SessionHelper>();
 builder.Services.AddScoped<SanPhamService>();
 builder.Services.AddScoped<GioHangService>();
 builder.Services.AddScoped<HoaDonBanService>();
+builder.Services.AddScoped<KhachHangService>();
+builder.Services.AddScoped<NhanVienService>();
+builder.Services.AddScoped<NhaCungCapService>();
+builder.Services.AddScoped<KhuyenMaiService>();
+builder.Services.AddScoped<DanhMucSanPhamService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession(options =>
 {

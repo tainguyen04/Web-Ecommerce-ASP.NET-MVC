@@ -99,13 +99,15 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(IFormFile file,int id, [Bind("Id,TenSanPham,GiaNhap,GiaBan,SoLuongTon,DanhMucId,HangSanXuat,MoTa,HinhAnh,KhuyenMaiId")] SanPham sanPham)
+        public async Task<IActionResult> Edit(IFormFile? file,int id, [Bind("Id,TenSanPham,GiaNhap,GiaBan,SoLuongTon,DanhMucId,HangSanXuat,MoTa,HinhAnh,KhuyenMaiId")] SanPham sanPham)
         {
             if (id != sanPham.Id)
             {
                 return NotFound();
             }
 
+            // Loại bỏ kiểm tra lỗi cho HinhAnh vì nó được xử lý riêng
+            ModelState.Remove("HinhAnh");
             if (ModelState.IsValid)
             {
                 try
@@ -118,7 +120,7 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
                     else
                     {
                         TempData["SuccessMessage"] = "Cập nhật sản phẩm thành công!";
-                        RedirectToAction(nameof(Index));
+                        return RedirectToAction(nameof(Index));
                     }
                         
                 }
