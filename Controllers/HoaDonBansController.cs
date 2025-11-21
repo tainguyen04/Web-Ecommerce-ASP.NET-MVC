@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,13 +15,11 @@ namespace QLCHBanDienThoaiMoi.Controllers
 {
     public class HoaDonBansController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly HoaDonBanService _hoaDonBanService;
         private readonly GioHangService _gioHangService;
         private readonly SessionHelper _sessionHelper;
         public HoaDonBansController(HoaDonBanService hoaDonBanService, GioHangService gioHangService, SessionHelper sessionHelper)
         {
-            _context = context;
             _hoaDonBanService = hoaDonBanService;
             _gioHangService = gioHangService;
             _sessionHelper = sessionHelper;
@@ -72,34 +71,17 @@ namespace QLCHBanDienThoaiMoi.Controllers
             return View(hoaDonBan);
         }
 
-        // GET: HoaDonBans/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var hoaDonBan = await _context.HoaDonBan.FindAsync(id);
-            if (hoaDonBan == null)
-            {
-                return NotFound();
-            }
-            ViewData["KhachHangId"] = new SelectList(_context.KhachHang, "Id", "Id", hoaDonBan.KhachHangId);
-            ViewData["NhanVienId"] = new SelectList(_context.NhanVien, "Id", "Id", hoaDonBan.NhanVienId);
-            return View(hoaDonBan);
-        }
 
         // POST: HoaDonBans/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(HoaDonBan hoaDonBan,string selectedCartItems)
+        public async Task<IActionResult> Create(HoaDonBan hoaDonBan, string selectedCartItems)
         {
             var sessionId = _sessionHelper.EnsureSessionIdExists();
             var gioHang = await _gioHangService.GetGioHangAsync(sessionId, null);
-            if(gioHang == null)
+            if (gioHang == null)
             {
                 return RedirectToAction("Index", "GioHangs", new { message = "Your cart is empty." });
             }
@@ -125,7 +107,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
             hoaDonBan.TrangThai = TrangThaiHoaDon.HoanThanh;
             hoaDonBan.TongTien = (int)hoaDonBan.ChiTietHoaDonBans.Sum(ct => ct.SoLuong * ct.GiaBan);
 
-            var result = await _hoaDonBanService.CreateHoaDonBanAsync(hoaDonBan,hoaDonBan.ChiTietHoaDonBans.ToList());
+            var result = await _hoaDonBanService.CreateHoaDonBanAsync(hoaDonBan, hoaDonBan.ChiTietHoaDonBans.ToList());
 
             if (result)
             {

@@ -97,8 +97,6 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
                     var dm = await _danhMucSanPhamService.UpdateDanhMucSanPhamAsync(danhMucSanPham);
                     if (!dm)
                     {
-                    if (!DanhMucSanPhamExists(danhMucSanPham.Id))
-                    {
                         return NotFound();
                     }
                     else
@@ -106,39 +104,33 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
                         TempData["SuccessMessage"] = "Cập nhật danh mục sản phẩm thành công!";
                         return RedirectToAction(nameof(Index));
                     }
-            return View(danhMucSanPham);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     return NotFound();
                 }
                 
-            var danhMucSanPham = await _context.DanhMucSanPham
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (danhMucSanPham == null)
-            {
-                return NotFound();
             }
-
             return View(danhMucSanPham);
         }
 
-        // POST: DanhMucSanPhams/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var dm = await _danhMucSanPhamService.DeleteDanhMucSanPhamAsync(id);
-            if (!dm)
+            // POST: DanhMucSanPhams/Delete/5
+            [HttpPost, ActionName("Delete")]
+            [ValidateAntiForgeryToken]
+            public  async Task<IActionResult> DeleteConfirmed(int id)
             {
-                return NotFound();
+                var dm = await _danhMucSanPhamService.DeleteDanhMucSanPhamAsync(id);
+                if (!dm)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            else
-            {
-                return RedirectToAction(nameof(Index));
-            }
-        }
 
-        
-    }
-}
+
+        }
+    } 
+

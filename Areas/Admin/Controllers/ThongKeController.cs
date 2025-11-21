@@ -43,7 +43,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
                 {
                     decimal khuyenMai = 0;
                     if (ct.SanPham != null)
-                        khuyenMai = ct.SanPham.KhuyenMai; // trực tiếp, vì là decimal
+                        khuyenMai = ct.SanPham.KhuyenMai.GiaTri; // trực tiếp, vì là decimal
 
                     doanhThu += ct.GiaBan * (1 - khuyenMai / 100m) * ct.SoLuong;
                 }
@@ -69,7 +69,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
                 {
                     decimal khuyenMai = 0;
                     if (ct.SanPham != null)
-                        khuyenMai = ct.SanPham.KhuyenMai;
+                        khuyenMai = ct.SanPham.KhuyenMai.GiaTri;
 
                     doanhThu += ct.GiaBan * (1 - khuyenMai / 100m) * ct.SoLuong;
                 }
@@ -94,7 +94,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
                 {
                     decimal khuyenMai = 0;
                     if (ct.SanPham != null)
-                        khuyenMai = ct.SanPham.KhuyenMai;
+                        khuyenMai = ct.SanPham.KhuyenMai.GiaTri;
 
                     doanhThu += ct.GiaBan * (1 - khuyenMai / 100m) * ct.SoLuong;
                 }

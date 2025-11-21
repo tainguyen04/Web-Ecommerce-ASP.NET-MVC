@@ -76,7 +76,7 @@
                                     </li>
                                     <li>
                                         <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline">
-                                            <button type="submit" class="dropdown-item text-danger" title="Xóa"
+                                            <button type="button" class="dropdown-item text-danger" title="Xóa"
                                                     onclick="confirmDelete(event,this, '@item.TenSanPham')">
                                                 <i class="fas fa-trash me-2"></i>Xóa
                                             </button>
