@@ -10,6 +10,7 @@
         <i class="fas fa-plus me-2"></i>Thêm sản phẩm mới
     </a>
 </div>
+
 <div class="admin-table">
     <div class="table-responsive">
         <table class="table table-hover mb-0">
@@ -35,6 +36,7 @@
                         </td>
                         <td>
                             <div class="fw-bold text-center overflow-hidden">@item.TenSanPham</div>
+                            <small class="text-muted">@item.HangSanXuat</small>
                         </td>
                         <td>
                             <div class="text-success fw-bold fst-italic text-end" style="width:max-content;">@Html.FormatPrice(item.GiaKhuyenMai)</div>

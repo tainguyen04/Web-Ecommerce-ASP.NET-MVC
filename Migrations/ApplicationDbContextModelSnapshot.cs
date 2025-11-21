@@ -60,6 +60,9 @@ namespace QLCHBanDienThoaiMoi.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("KhuyenMai")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 

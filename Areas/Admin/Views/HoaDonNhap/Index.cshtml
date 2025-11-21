@@ -1,0 +1,36 @@
+@model IEnumerable<QLCHBanDienThoaiMoi.DTO.HoaDonNhapDTO>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Danh sách Phiếu Nhập";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<a href="@Url.Action("Create", "HoaDonNhap", new { area = "Admin" })" class="btn btn-primary mb-3">➕ Thêm Phiếu Nhập</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Ngày Lập</th>
+            <th>Nhà Cung Cấp</th>
+            <th>Tổng Tiền</th>
+            <th>Hành Động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.NgayLap.ToString("yyyy-MM-dd")</td>
+                <td>@item.NhaCungCapName</td>
+                <td>@item.TongTien.ToString("N0")</td>
+                <td>
+                    <a href="@Url.Action("Edit", "HoaDonNhap", new { area = "Admin", id = item.Id })" class="btn btn-sm btn-warning">✏️ Sửa</a>
+                    <a href="@Url.Action("Delete", "HoaDonNhap", new { area = "Admin", id = item.Id })" class="btn btn-sm btn-danger">🗑 Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

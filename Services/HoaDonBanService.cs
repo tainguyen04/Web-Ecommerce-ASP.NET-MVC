@@ -65,6 +65,9 @@ namespace QLCHBanDienThoaiMoi.Services
                 Console.WriteLine(ex.StackTrace);
                 return false;
             }
+            _context.HoaDonBan.Add(hoaDonBan);
+            var hd = await _context.SaveChangesAsync();
+            return hd > 0;
         }
         public async Task<bool> DeleteHoaDonBanAsync(int id)
         {

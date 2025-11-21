@@ -51,6 +51,7 @@ namespace QLCHBanDienThoaiMoi.Services
                 return new List<ChiTietGioHangDTO>();
             }
 
+
             return await gh.Select(gh => new ChiTietGioHangDTO
                 {
                     SessionId = gh.GioHang.SessionId,

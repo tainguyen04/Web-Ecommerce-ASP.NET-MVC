@@ -34,8 +34,16 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             return View(danhMucSanPham);
         }
+
+        // GET: DanhMucSanPhams/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
         // POST: DanhMucSanPhams/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -89,6 +97,8 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
                     var dm = await _danhMucSanPhamService.UpdateDanhMucSanPhamAsync(danhMucSanPham);
                     if (!dm)
                     {
+                    if (!DanhMucSanPhamExists(danhMucSanPham.Id))
+                    {
                         return NotFound();
                     }
                     else
@@ -96,13 +106,20 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
                         TempData["SuccessMessage"] = "Cập nhật danh mục sản phẩm thành công!";
                         return RedirectToAction(nameof(Index));
                     }
+            return View(danhMucSanPham);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     return NotFound();
                 }
                 
+            var danhMucSanPham = await _context.DanhMucSanPham
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (danhMucSanPham == null)
+            {
+                return NotFound();
             }
+
             return View(danhMucSanPham);
         }
 

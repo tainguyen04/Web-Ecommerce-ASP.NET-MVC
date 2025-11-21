@@ -9,27 +9,6 @@
         <h2>Quản lý danh mục</h2>
     </div>
 
-    <!-- Form thêm nhanh danh mục -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form asp-action="Create" method="post" class="row g-2">
-                <div class="col-md-10">
-                    <input type="text" class="form-control form-control-sm" placeholder="Tên danh mục" name="TenDanhMuc" required>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary btn-sm w-100">
-                        <i class="fas fa-plus me-1"></i>Thêm
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Bảng danh sách -->
-    <div class="admin-table">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover rounded">
-                <thead class="table-light">
                     <tr>
                         <th width="80%">Tên danh mục</th>
                         <th width="20%" class="text-center">Tùy chỉnh</th>

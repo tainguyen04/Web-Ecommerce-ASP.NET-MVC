@@ -1,0 +1,33 @@
+@model QLCHBanDienThoaiMoi.DTO.HoaDonNhapDTO
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Xóa Phiếu Nhập";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="alert alert-warning">
+    Bạn có chắc chắn muốn xóa phiếu nhập này không?
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Nhà Cung Cấp</th>
+        <td>@Model.NhaCungCapName</td>
+    </tr>
+    <tr>
+        <th>Ngày Lập</th>
+        <td>@Model.NgayLap.ToString("yyyy-MM-dd")</td>
+    </tr>
+    <tr>
+        <th>Tổng Tiền</th>
+        <td>@Model.TongTien.ToString("N0")</td>
+    </tr>
+</table>
+
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">🗑 Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

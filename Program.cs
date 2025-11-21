@@ -30,6 +30,7 @@ builder.Services.AddScoped<KhuyenMaiService>();
 builder.Services.AddScoped<DanhMucSanPhamService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession(options =>
+
 {
     options.IdleTimeout = TimeSpan.FromDays(3); // 3 ngày
     options.Cookie.HttpOnly = true;

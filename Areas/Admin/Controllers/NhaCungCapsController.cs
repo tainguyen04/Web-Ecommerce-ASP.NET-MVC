@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,7 +107,7 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
             return View(nhaCungCap);
         }
 
-       
+
         // POST: Admin/NhaCungCaps/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -117,7 +118,7 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-                return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -15,6 +15,7 @@ namespace QLCHBanDienThoaiMoi.Models
         
         public int SoLuong { get; set; }
         public int GiaBan { get; set; }
+        public decimal? KhuyenMai { get; set; }
 
         public PhieuBaoHanh? PhieuBaoHanh { get; set; }
         public HoaDonBan? HoaDonBan { get; set; } 

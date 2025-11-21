@@ -68,6 +68,8 @@
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
+                        </div>
+
                             </td>
                         </tr>
                         stt++;
@@ -83,10 +85,13 @@
             </div>
             <form method="get" asp-action="Create" asp-controller="HoaDonBans" id="checkoutForm">
                 <input type="hidden" name="selectedCartItems" id="selectedCartItems" />
+
                 <button type="submit" class="btn btn-success btn-lg">
                     <i class="bi bi-credit-card"></i> Thanh toán
                 </button>
+
             </form>
         </div>
+    </div>
     }
 </div>

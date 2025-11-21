@@ -1,0 +1,25 @@
+@model QLCHBanDienThoaiMoi.DTO.HoaDonNhapDTO
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Chi tiết Phiếu Nhập";
+}
+
+<h2 class="text-center mb-4">📄 Chi Tiết Phiếu Nhập</h2>
+
+<div class="card p-4 shadow-sm">
+    <dl class="row">
+        <dt class="col-sm-3">Mã Phiếu:</dt>
+        <dd class="col-sm-9">@Model.Id</dd>
+
+        <dt class="col-sm-3">Ngày Lập:</dt>
+        <dd class="col-sm-9">@Model.NgayLap.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Nhà Cung Cấp:</dt>
+        <dd class="col-sm-9">@Model.NhaCungCapName</dd>
+
+        <dt class="col-sm-3">Tổng Tiền:</dt>
+        <dd class="col-sm-9">@Model.TongTien.ToString("N0") ₫</dd>
+    </dl>
+
+    <a href="@Url.Action("Index", "HoaDonNhap", new { area = "Admin" })" class="btn btn-secondary">⬅ Quay lại</a>
+</div>

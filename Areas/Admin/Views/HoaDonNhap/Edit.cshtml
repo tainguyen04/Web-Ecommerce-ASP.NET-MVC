@@ -1,0 +1,103 @@
+@model QLCHBanDienThoaiMoi.DTO.HoaDonNhapDTO
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Sửa Phiếu Nhập";
+    var sanPhamList = (List<QLCHBanDienThoaiMoi.Models.SanPham>)ViewBag.SanPhamList;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label>Nhà Cung Cấp</label>
+        <select asp-for="NhaCungCapId" class="form-control" asp-items="ViewBag.NCCList">
+            <option value="">-- Chọn nhà cung cấp --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Ngày Lập</label>
+        <input asp-for="NgayLap" type="date" class="form-control" value="@Model.NgayLap.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <table class="table table-bordered" id="productTable">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá nhập</th>
+                <th>Thành tiền</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.ChiTietSanPhams.Count; i++)
+            {
+                var chiTiet = Model.ChiTietSanPhams[i];
+                <tr>
+                    <td>
+                        <select name="ChiTietSanPhams[@i].SanPhamId" class="form-control">
+                            <option value="">-- Chọn sản phẩm --</option>
+                            @foreach (var sp in sanPhamList)
+                            {
+                                if (chiTiet.SanPhamId == sp.Id)
+                                {
+                                    <option value="@sp.Id" selected="selected">@sp.TenSanPham</option>
+                                }
+                                else
+                                {
+                                    <option value="@sp.Id">@sp.TenSanPham</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td><input type="number" name="ChiTietSanPhams[@i].SoLuong" value="@chiTiet.SoLuong" class="form-control" min="1" /></td>
+                    <td><input type="number" name="ChiTietSanPhams[@i].GiaNhap" value="@chiTiet.GiaNhap" class="form-control" min="0" /></td>
+                    <td>@chiTiet.ThanhTien</td>
+                    <td><button type="button" class="btn btn-danger removeRow">Xóa</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" id="addRow" class="btn btn-primary mb-3">Thêm sản phẩm</button>
+    <br />
+    <button type="submit" class="btn btn-success">💾 Cập Nhật Phiếu Nhập</button>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var index = @Model.ChiTietSanPhams.Count;
+
+        var sanPhamOptions = '';
+        @foreach (var sp in sanPhamList)
+        {
+                <text>sanPhamOptions += '<option value="@sp.Id">@sp.TenSanPham</option>';</text>
+        }
+
+        $("#addRow").click(function () {
+            var row = `<tr>
+                <td>
+                    <select name="ChiTietSanPhams[${index}].SanPhamId" class="form-control">
+                        <option value="">-- Chọn sản phẩm --</option>
+                        ${sanPhamOptions}
+                    </select>
+                </td>
+                <td><input type="number" name="ChiTietSanPhams[${index}].SoLuong" value="1" class="form-control" min="1"/></td>
+                <td><input type="number" name="ChiTietSanPhams[${index}].GiaNhap" value="0" class="form-control" min="0"/></td>
+                <td>0</td>
+                <td><button type="button" class="btn btn-danger removeRow">Xóa</button></td>
+            </tr>`;
+            $("#productTable tbody").append(row);
+            index++;
+        });
+
+        $(document).on("click", ".removeRow", function () {
+            $(this).closest("tr").remove();
+        });
+    </script>
+}

@@ -78,6 +78,9 @@ namespace QLCHBanDienThoaiMoi.Services
             {
                 return false;
             }
+            // Cập nhật các thuộc tính trước khi xử lý ảnh
+            _context.Entry(existingSanPham).CurrentValues.SetValues(sanPham);
+
             if (file != null && file.Length > 0)
             {
                 if(!string.IsNullOrEmpty(existingSanPham.HinhAnh) && existingSanPham.HinhAnh != "default.png")

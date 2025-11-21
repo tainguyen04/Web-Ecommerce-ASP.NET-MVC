@@ -56,5 +56,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
             var gioHang = await _gioHangService.DeletedSanPhamFromGioHangAsync(sessionId,khachHangId,sanPhamId);
             return RedirectToAction(nameof(Index));
         }
+
+        
     }
 }

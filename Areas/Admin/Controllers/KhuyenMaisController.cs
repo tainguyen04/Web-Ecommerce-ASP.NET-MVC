@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,7 +56,7 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
                 {
                     ModelState.AddModelError("", "Có lỗi xảy ra khi thêm khuyến mãi.");
                 }
-                    
+
             }
             return View(khuyenMai);
         }

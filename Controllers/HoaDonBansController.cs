@@ -14,11 +14,13 @@ namespace QLCHBanDienThoaiMoi.Controllers
 {
     public class HoaDonBansController : Controller
     {
+        private readonly ApplicationDbContext _context;
         private readonly HoaDonBanService _hoaDonBanService;
         private readonly GioHangService _gioHangService;
         private readonly SessionHelper _sessionHelper;
         public HoaDonBansController(HoaDonBanService hoaDonBanService, GioHangService gioHangService, SessionHelper sessionHelper)
         {
+            _context = context;
             _hoaDonBanService = hoaDonBanService;
             _gioHangService = gioHangService;
             _sessionHelper = sessionHelper;
@@ -70,6 +72,23 @@ namespace QLCHBanDienThoaiMoi.Controllers
             return View(hoaDonBan);
         }
 
+        // GET: HoaDonBans/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var hoaDonBan = await _context.HoaDonBan.FindAsync(id);
+            if (hoaDonBan == null)
+            {
+                return NotFound();
+            }
+            ViewData["KhachHangId"] = new SelectList(_context.KhachHang, "Id", "Id", hoaDonBan.KhachHangId);
+            ViewData["NhanVienId"] = new SelectList(_context.NhanVien, "Id", "Id", hoaDonBan.NhanVienId);
+            return View(hoaDonBan);
+        }
 
         // POST: HoaDonBans/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
