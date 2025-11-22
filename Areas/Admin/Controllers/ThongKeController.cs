@@ -1,107 +1,62 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using QLCHBanDienThoaiMoi.Data;
-using QLCHBanDienThoaiMoi.Models;
+using QLCHBanDienThoaiMoi.Services;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace QLCHBanDienThoaiMoi.Controllers
+namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class ThongKeController : Controller
     {
-        private readonly ApplicationDbContext db;
+        private readonly IThongKeService _thongKeService;
+        private readonly ApplicationDbContext _context;
 
-        public ThongKeController(ApplicationDbContext context)
+        public ThongKeController(IThongKeService thongKeService, ApplicationDbContext context)
         {
-            db = context;
+            _thongKeService = thongKeService;
+            _context = context;
         }
 
+        /// <summary>
+        /// Hiển thị form chọn ngày bắt đầu, ngày kết thúc
+        /// </summary>
+        [HttpGet]
         public IActionResult Index()
         {
-            var today = DateTime.Now;
-
-            ViewBag.DoanhThuHomNay = TinhDoanhThuTheoNgay(today);
-            ViewBag.DoanhThuThangNay = TinhDoanhThuTheoThang(today.Month, today.Year);
-            ViewBag.DoanhThuNamNay = TinhDoanhThuTheoNam(today.Year);
-
             return View();
         }
 
-        private decimal TinhDoanhThuTheoNgay(DateTime ngay)
+        /// <summary>
+        /// Thống kê doanh thu theo khoảng ngày
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Index(DateTime tuNgay, DateTime denNgay)
         {
-            var hoaDons = db.HoaDonBan
-                .Include(h => h.ChiTietHoaDonBans)
-                    .ThenInclude(ct => ct.SanPham)
-                .Where(h => h.NgayBan.Date == ngay.Date && h.TrangThai == TrangThaiHoaDon.HoanThanh)
-                .ToList(); // dữ liệu về bộ nhớ
-
-            decimal doanhThu = 0;
-
-            foreach (var h in hoaDons)
+            if (tuNgay > denNgay)
             {
-                foreach (var ct in h.ChiTietHoaDonBans)
-                {
-                    decimal khuyenMai = 0;
-                    if (ct.SanPham != null)
-                        khuyenMai = ct.SanPham.KhuyenMai.GiaTri; // trực tiếp, vì là decimal
-
-                    doanhThu += ct.GiaBan * (1 - khuyenMai / 100m) * ct.SoLuong;
-                }
+                ViewBag.Error = "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.";
+                return View();
             }
 
-            return doanhThu;
-        }
+            // Tính doanh thu
+            var doanhThu = await _thongKeService.DoanhThuTheoKhoang(tuNgay, denNgay);
 
-
-        private decimal TinhDoanhThuTheoThang(int thang, int nam)
-        {
-            var hoaDons = db.HoaDonBan
-                .Include(h => h.ChiTietHoaDonBans)
-                    .ThenInclude(ct => ct.SanPham)
-                .Where(h => h.NgayBan.Month == thang && h.NgayBan.Year == nam && h.TrangThai == TrangThaiHoaDon.HoanThanh)
+            // Lấy danh sách hóa đơn trong khoảng thời gian
+            var danhSachHoaDon = _context.HoaDonBan
+                .Where(h => h.TrangThai == Models.TrangThaiHoaDon.HoanThanh
+                         && h.NgayBan.Date >= tuNgay.Date
+                         && h.NgayBan.Date <= denNgay.Date)
                 .ToList();
 
-            decimal doanhThu = 0;
+            // Truyền dữ liệu ra view
+            ViewBag.TuNgay = tuNgay.ToString("yyyy-MM-dd");
+            ViewBag.DenNgay = denNgay.ToString("yyyy-MM-dd");
+            ViewBag.DoanhThu = doanhThu;
+            ViewBag.DanhSach = danhSachHoaDon;
 
-            foreach (var h in hoaDons)
-            {
-                foreach (var ct in h.ChiTietHoaDonBans)
-                {
-                    decimal khuyenMai = 0;
-                    if (ct.SanPham != null)
-                        khuyenMai = ct.SanPham.KhuyenMai.GiaTri;
-
-                    doanhThu += ct.GiaBan * (1 - khuyenMai / 100m) * ct.SoLuong;
-                }
-            }
-
-            return doanhThu;
+            return View();
         }
-
-        private decimal TinhDoanhThuTheoNam(int nam)
-        {
-            var hoaDons = db.HoaDonBan
-                .Include(h => h.ChiTietHoaDonBans)
-                    .ThenInclude(ct => ct.SanPham)
-                .Where(h => h.NgayBan.Year == nam && h.TrangThai == TrangThaiHoaDon.HoanThanh)
-                .ToList();
-
-            decimal doanhThu = 0;
-
-            foreach (var h in hoaDons)
-            {
-                foreach (var ct in h.ChiTietHoaDonBans)
-                {
-                    decimal khuyenMai = 0;
-                    if (ct.SanPham != null)
-                        khuyenMai = ct.SanPham.KhuyenMai.GiaTri;
-
-                    doanhThu += ct.GiaBan * (1 - khuyenMai / 100m) * ct.SoLuong;
-                }
-            }
-
-            return doanhThu;
-        }
-
     }
 }
