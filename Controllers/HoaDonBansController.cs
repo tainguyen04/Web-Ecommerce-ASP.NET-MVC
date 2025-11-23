@@ -19,11 +19,13 @@ namespace QLCHBanDienThoaiMoi.Controllers
         private readonly IHoaDonBanService _hoaDonBanService;
         private readonly IGioHangService _gioHangService;
         private readonly SessionHelper _sessionHelper;
-        public HoaDonBansController(IHoaDonBanService hoaDonBanService, IGioHangService gioHangService, SessionHelper sessionHelper)
+        private readonly IPhieuBaoHanhService _phieuBaoHanhService;
+        public HoaDonBansController(IHoaDonBanService hoaDonBanService, IGioHangService gioHangService, SessionHelper sessionHelper, IPhieuBaoHanhService phieuBaoHanhService)
         {
             _hoaDonBanService = hoaDonBanService;
             _gioHangService = gioHangService;
             _sessionHelper = sessionHelper;
+            _phieuBaoHanhService = phieuBaoHanhService;
         }
 
         [HttpGet]
@@ -112,6 +114,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
 
             if (result)
             {
+                await _phieuBaoHanhService.CreateAsync(hoaDonBan.Id);
                 foreach (var cartItem in hoaDonBan.ChiTietHoaDonBans.ToList())
                 {
                     await _gioHangService.DeletedSanPhamFromGioHangAsync(sessionId, null, cartItem.SanPhamId);

@@ -7,7 +7,7 @@ namespace QLCHBanDienThoaiMoi.Services.Interfaces
         // CRUD
         Task<List<PhieuBaoHanh>> GetAllAsync();
         Task<PhieuBaoHanh?> GetByIdAsync(int hoaDonBanId, int sanPhamId);
-        Task<bool> CreateAsync(PhieuBaoHanh phieu);
+        Task<bool> CreateAsync(int hoaDonBan);
         Task<bool> UpdateAsync(PhieuBaoHanh phieu);
         Task<bool> DeleteAsync(int hoaDonBanId, int sanPhamId);
 

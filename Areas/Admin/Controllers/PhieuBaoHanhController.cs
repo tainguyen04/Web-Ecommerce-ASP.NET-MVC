@@ -33,35 +33,6 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
             return View(phieu);
         }
 
-        // GET: PhieuBaoHanh/Create
-        public async Task<IActionResult> Create()
-        {
-            await LoadDropDownData();
-            return View();
-        }
-
-        // POST: PhieuBaoHanh/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("HoaDonBanId,SanPhamId,NgayLap,NgayHetHan,MoTa,TrangThai")] PhieuBaoHanh phieu)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = await _phieuBaoHanhService.CreateAsync(phieu);
-
-                if (result)
-                {
-                    TempData["SuccessMessage"] = "Thêm phiếu bảo hành thành công!";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                ModelState.AddModelError("", "Không thể tạo phiếu bảo hành.");
-            }
-
-            await LoadDropDownData(phieu);
-            return View(phieu);
-        }
-
         // GET: PhieuBaoHanh/Edit
         public async Task<IActionResult> Edit(int hoaDonBanId, int sanPhamId)
         {
