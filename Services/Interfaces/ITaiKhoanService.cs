@@ -5,7 +5,7 @@ namespace QLCHBanDienThoaiMoi.Services.Interfaces
     public interface ITaiKhoanService
     {
         TaiKhoan? DangNhap(string username, string password);
-        Task<bool> DangKyAsync(TaiKhoan tk, KhachHang kh);
+        Task<bool> DangKyAsync(TaiKhoan tk, KhachHang kh,string sessionId);
         Task<bool> KiemTraTenDangNhap(string username);
     }
 }

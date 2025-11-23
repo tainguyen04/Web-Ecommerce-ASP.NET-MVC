@@ -10,10 +10,12 @@ namespace QLCHBanDienThoaiMoi.Services
     public class TaiKhoanService : ITaiKhoanService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IGioHangService _gioHangService;
 
-        public TaiKhoanService(ApplicationDbContext context)
+        public TaiKhoanService(ApplicationDbContext context,IGioHangService gioHangService)
         {
             _context = context;
+            _gioHangService = gioHangService;
         }
 
         // ============================
@@ -45,7 +47,7 @@ namespace QLCHBanDienThoaiMoi.Services
         // ============================
         // 📝 Đăng ký tài khoản khách hàng
         // ============================
-        public async Task<bool> DangKyAsync(TaiKhoan tk, KhachHang kh)
+        public async Task<bool> DangKyAsync(TaiKhoan tk, KhachHang kh,string sessionId)
         {
             if (await KiemTraTenDangNhap(tk.TenDangNhap))
                 return false;
@@ -59,8 +61,12 @@ namespace QLCHBanDienThoaiMoi.Services
             // Gán tài khoản vào khách hàng
             kh.TaiKhoan = tk;
             await _context.KhachHang.AddAsync(kh);
-
-            return await _context.SaveChangesAsync() > 0;
+            await _context.SaveChangesAsync();
+            //Tạo giỏ hàng
+            await _gioHangService.CreateGioHangAsync(null,kh.Id);
+            if (string.IsNullOrEmpty(sessionId))
+                await _gioHangService.MergeCartAsync(sessionId, kh.Id);
+            return true;
         }
 
         // ============================

@@ -4,16 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using QLCHBanDienThoaiMoi.Models;
 using QLCHBanDienThoaiMoi.Services.Interfaces;
+using QLCHBanDienThoaiMoi.Helpers;
 
 namespace QLCHBanDienThoaiMoi.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ITaiKhoanService _taiKhoanService;
+        private readonly SessionHelper _sessionHelper;
 
-        public AccountController(ITaiKhoanService taiKhoanService)
+        public AccountController(ITaiKhoanService taiKhoanService,SessionHelper sessionHelper)
         {
             _taiKhoanService = taiKhoanService;
+            _sessionHelper = sessionHelper;
         }
 
         // ---------------------------------------------------
@@ -87,6 +90,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
             string email
         )
         {
+            var sessionId = _sessionHelper.EnsureSessionIdExists();
             if (password != confirmPassword)
             {
                 ViewBag.Error = "Mật khẩu xác nhận không khớp!";
@@ -114,7 +118,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
                 SoDienThoai = sdt
             };
 
-            bool success = await _taiKhoanService.DangKyAsync(tk, kh);
+            bool success = await _taiKhoanService.DangKyAsync(tk, kh, sessionId);
 
             if (!success)
             {

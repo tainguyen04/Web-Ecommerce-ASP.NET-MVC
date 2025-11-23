@@ -10,7 +10,7 @@
         <div class="alert alert-danger">@ViewBag.Error</div>
     }
 
-    <form method="post">
+    <form method="post" asp-action="Login" asp-controller="Account">
         <div class="mb-3">
             <label class="form-label">Tên đăng nhập</label>
             <input name="username" class="form-control" required />
