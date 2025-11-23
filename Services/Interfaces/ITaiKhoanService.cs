@@ -1,4 +1,5 @@
-﻿using QLCHBanDienThoaiMoi.Models;
+﻿using QLCHBanDienThoaiMoi.DTO;
+using QLCHBanDienThoaiMoi.Models;
 
 namespace QLCHBanDienThoaiMoi.Services.Interfaces
 {
@@ -7,5 +8,13 @@ namespace QLCHBanDienThoaiMoi.Services.Interfaces
         TaiKhoan? DangNhap(string username, string password);
         Task<bool> DangKyAsync(TaiKhoan tk, KhachHang kh,string sessionId);
         Task<bool> KiemTraTenDangNhap(string username);
+        Task<bool> ResetMatKhauAsync(int id,string passWord);
+        Task<List<TaiKhoan>> GetAllTaiKhoanAsync();
+        Task<TaiKhoan?> GetTaiKhoanByIdAsync(int? id);
+        Task<bool> CreateTaiKhoanAsync(TaiKhoan taiKhoan);
+        Task<bool> UpdateTaiKhoanAsync(TaiKhoan taiKhoan);
+        Task<bool> DeleteTaiKhoanAsync(int? id);
+        Task<bool> LockTaiKhoanAsync(int  id);
+        Task<bool> UnlockTaiKhoanAsync(int id);
     }
 }

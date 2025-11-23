@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,12 +20,14 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
         private readonly IHoaDonBanService _hoaDonBanService;
         private readonly IKhachHangService _khachHangService;
         private readonly INhanVienService _nhanVienService;
+        private readonly ISanPhamService _sanPhamService;
 
-        public HoaDonBansController(IHoaDonBanService hoaDonBanService, IKhachHangService khachHangService, INhanVienService nhanVienService)
+        public HoaDonBansController(IHoaDonBanService hoaDonBanService, IKhachHangService khachHangService, INhanVienService nhanVienService,ISanPhamService sanPhamService)
         {
             _hoaDonBanService = hoaDonBanService;
             _khachHangService = khachHangService;
             _nhanVienService = nhanVienService;
+            _sanPhamService = sanPhamService;
         }
 
         // GET: Admin/HoaDonBans
@@ -52,8 +55,16 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
         // GET: Admin/HoaDonBans/Create
         public async Task<IActionResult> Create()
         {
+            await LoadSanPhamAsync();
             await LoadDataUser();
-            return View();
+            var hoadon = new HoaDonBan
+            {
+                NgayBan = DateTime.Now,
+                PhuongThucThanhToan = PhuongThucThanhToan.TienMat,
+                TrangThai = TrangThaiHoaDon.ChuaHoanThanh,
+                DiaChiNhanHang = ""
+            };
+            return View(hoadon);
         }
 
         // POST: Admin/HoaDonBans/Create
@@ -61,11 +72,37 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,NgayBan,KhachHangId,NhanVienId,DiaChiNhanHang,TongTien,PhuongThucThanhToan,TrangThai")] HoaDonBan hoaDonBan)
+        public async Task<IActionResult> Create([Bind("Id,NgayBan,KhachHangId,NhanVienId,DiaChiNhanHang,TongTien,PhuongThucThanhToan,TrangThai")] HoaDonBan hoaDonBan,string chiTietHoaDonJson)
         {
             if (ModelState.IsValid)
             {
+                try
+                {
+                    var chiTietHoaDon = JsonSerializer.Deserialize<List<ChiTietHoaDonBan>>(chiTietHoaDonJson);
 
+                    if (chiTietHoaDon == null || !chiTietHoaDon.Any())
+                    {
+                        ModelState.AddModelError("", "Vui lòng thêm ít nhất một sản phẩm");
+                        await LoadDataUser();
+                        return View(hoaDonBan);
+                    }
+
+                    // Gọi service method
+                    var result = await _hoaDonBanService.CreateHoaDonBanAsync(hoaDonBan, chiTietHoaDon);
+
+                    if (result)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Lỗi khi tạo hóa đơn");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi: " + ex.Message);
+                }
             }
             await LoadDataUser(hoaDonBan);
             return View(hoaDonBan);
@@ -151,6 +188,11 @@ namespace QLCHBanDienThoaiMoi.Areas.Admin.Controllers
             var nvList = await _nhanVienService.GetAllNhanVienAsync();
             ViewData["KhachHangId"] = new SelectList(khList, "Id", "TenKhachHang",hoaDonBan?.KhachHangId);
             ViewData["NhanVienId"] = new SelectList(nvList, "Id", "TenNhanVien",hoaDonBan?.NhanVienId);
+        }
+        public async Task LoadSanPhamAsync()
+        {
+            var sanPhamList = await _sanPhamService.GetSanPhamsAsync();
+            ViewBag.SanPhamList = sanPhamList;
         }
     }
 }

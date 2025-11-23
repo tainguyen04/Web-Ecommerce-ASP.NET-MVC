@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QLCHBanDienThoaiMoi.Data;
+using QLCHBanDienThoaiMoi.DTO;
 using QLCHBanDienThoaiMoi.Models;
 using QLCHBanDienThoaiMoi.Services.Interfaces;
 using System.Security.Cryptography;
@@ -76,6 +77,84 @@ namespace QLCHBanDienThoaiMoi.Services
         {
             return await _context.TaiKhoan
                 .AnyAsync(x => x.TenDangNhap == username);
+        }
+
+        public async Task<List<TaiKhoan>> GetAllTaiKhoanAsync()
+        {
+            return await _context.TaiKhoan.ToListAsync();
+        }
+
+        public async Task<TaiKhoan?> GetTaiKhoanByIdAsync(int? id)
+        {
+            if (id == null) return null;
+            return await _context.TaiKhoan.FindAsync(id);
+        }
+
+        public async Task<bool> CreateTaiKhoanAsync(TaiKhoan taiKhoan)
+        {
+            try
+            {
+                
+                var existingTaiKhoan = await _context.TaiKhoan.AnyAsync(tk => tk.TenDangNhap == taiKhoan.TenDangNhap);
+                if (existingTaiKhoan) return false;
+                taiKhoan.MatKhau = HashPassword(taiKhoan.MatKhau);
+                if (taiKhoan.VaiTro == VaiTro.User)
+                    taiKhoan.KhachHang = new KhachHang();
+                else if(taiKhoan.VaiTro == VaiTro.Admin)
+                    taiKhoan.NhanVien = new NhanVien();
+
+                _context.TaiKhoan.Add(taiKhoan);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch 
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateTaiKhoanAsync(TaiKhoan taiKhoan)
+        {
+            try
+            {
+                _context.TaiKhoan.Update(taiKhoan);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteTaiKhoanAsync(int? id)
+        {
+            var tk = await _context.TaiKhoan.FindAsync(id);
+            if(tk == null) return false;
+            _context.TaiKhoan.Remove(tk);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> LockTaiKhoanAsync(int id)
+        {
+            var tk = await _context.TaiKhoan.FindAsync(id);
+            if (tk == null) return false;
+            tk.TrangThai = TrangThaiTaiKhoan.Locked;
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UnlockTaiKhoanAsync(int id)
+        {
+            var tk = await _context.TaiKhoan.FindAsync(id);
+            if (tk == null) return false;
+            tk.TrangThai = TrangThaiTaiKhoan.Locked;
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> ResetMatKhauAsync(int id, string passWord)
+        {
+            var tk = await _context.TaiKhoan.FindAsync(id); 
+            if (tk == null) return false;
+            tk.MatKhau = HashPassword(passWord);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

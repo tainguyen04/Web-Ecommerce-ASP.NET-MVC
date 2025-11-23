@@ -1,61 +1,173 @@
 ﻿@model QLCHBanDienThoaiMoi.Models.HoaDonBan
-
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Tạo hóa đơn mới";
 }
 
-<h1>Create</h1>
-
-<h4>HoaDonBan</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="NgayBan" class="control-label"></label>
-                <input asp-for="NgayBan" class="form-control" />
-                <span asp-validation-for="NgayBan" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="KhachHangId" class="control-label"></label>
-                <select asp-for="KhachHangId" class ="form-control" asp-items="ViewBag.KhachHangId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="NhanVienId" class="control-label"></label>
-                <select asp-for="NhanVienId" class ="form-control" asp-items="ViewBag.NhanVienId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="DiaChiNhanHang" class="control-label"></label>
-                <input asp-for="DiaChiNhanHang" class="form-control" />
-                <span asp-validation-for="DiaChiNhanHang" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TongTien" class="control-label"></label>
-                <input asp-for="TongTien" class="form-control" />
-                <span asp-validation-for="TongTien" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhuongThucThanhToan" class="control-label"></label>
-                <select asp-for="PhuongThucThanhToan" class="form-control"></select>
-                <span asp-validation-for="PhuongThucThanhToan" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TrangThai" class="control-label"></label>
-                <select asp-for="TrangThai" class="form-control"></select>
-                <span asp-validation-for="TrangThai" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-primary">Tạo hóa đơn bán</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <form asp-action="Create" method="post" onsubmit="return prepareSubmit()">
+        <div class="row">
+            <!-- Cột trái: Thông tin hóa đơn -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">Thông tin hóa đơn</h5>
+                    </div>
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="NgayBan" class="form-label fw-bold">Ngày bán</label>
+                                    <input asp-for="NgayBan" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Tổng tiền</label>
+                                    <input id="TongTienDisplay" class="form-control" readonly value="0" />
+                                    <input type="hidden" asp-for="TongTien" id="TongTien" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Khách hàng</label>
+                            <select asp-for="KhachHangId" class="form-control">
+                                <option value="">-- Khách vãng lai --</option>
+                                @if (ViewBag.KhachHangId != null)
+                                {
+                                    foreach (var item in ViewBag.KhachHangId)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NhanVienId" class="form-label fw-bold">Nhân viên</label>
+                            <select asp-for="NhanVienId" class="form-control" asp-items="ViewBag.NhanVienId">
+                                <option value="">-- Chọn nhân viên --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DiaChiNhanHang" class="form-label fw-bold">Địa chỉ nhận hàng</label>
+                            <textarea asp-for="DiaChiNhanHang" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    @foreach (var item in Html.GetEnumSelectList<PhuongThucThanhToan>())
+                                    {
+                                        <div class="form-check py-1 w-100">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   asp-for="PhuongThucThanhToan"
+                                                   value="@item.Value"
+                                                   id="pttt_@item.Value" />
+                                            <label class="form-check-label w-100" for="pttt_@item.Value">
+                                                @item.Text
+                                            </label>
+                                        </div>
+                                    }
+                                    <span asp-validation-for="PhuongThucThanhToan" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    @Html.Raw(EnumExtensions.GetBadgeHtml(Model.TrangThai))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải: Danh sách sản phẩm -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">Danh sách sản phẩm</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Form thêm sản phẩm -->
+                        <div class="border p-3 mb-4 rounded bg-light">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="productSelect">
+                                        <option value="">-- Chọn sản phẩm --</option>
+                                        @if (ViewBag.SanPhamList != null)
+                                        {
+                                            foreach (var sp in ViewBag.SanPhamList)
+                                            {
+                                                <option value="@sp.Id" data-price="@sp.GiaBan">@sp.TenSanPham</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" class="form-control" id="productQuantity" value="1" min="1">
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-primary w-100" onclick="addProduct()">
+                                        Thêm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bảng sản phẩm -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Đơn giá</th>
+                                        <th width="100">Số lượng</th>
+                                        <th>Thành tiền</th>
+                                        <th width="50"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productTableBody">
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-active">
+                                        <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                                        <td class="fw-bold" id="totalAmount">0</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Nút tạo hóa đơn -->
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                Tạo hóa đơn
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden field để lưu sản phẩm -->
+        <input type="hidden" name="chiTietHoaDonJson" id="chiTietHoaDonJson" />
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

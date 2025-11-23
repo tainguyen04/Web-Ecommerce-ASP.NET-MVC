@@ -96,13 +96,13 @@
                     </a>
                     <div class="collapse" id="salesManagement">
                         <div class="submenu">
-                            <a class="nav-link" asp-area="Admin" asp-controller="KhachHangs" asp-action="Index">
-                                <i class="fas fa-users"></i>
-                                <span>Khách hàng</span>
-                            </a>
                             <a class="nav-link" asp-area="Admin" asp-controller="HoaDonBans" asp-action="Index">
                                 <i class="fas fa-receipt"></i>
                                 <span>Đơn hàng</span>
+                            </a>
+                            <a class="nav-link" asp-area="Admin" asp-controller="PhieuBaoHanhs" asp-action="Index">
+                                <i class="fa-solid fa-award"></i>
+                                <span>Phiếu bảo hành</span>
                             </a>
                         </div>
                     </div>
@@ -127,6 +127,33 @@
                             <a class="nav-link" asp-area="Admin" asp-controller="HoaDonNhap" asp-action="Index">
                                 <i class="fa-solid fa-receipt"></i>
                                 <span>Hóa đơn nhập</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Quản lý Tài khoản -->
+                <div class="nav-section">
+                    <a class="nav-link accordion-button collapsed bg-transparent shadow-none py-3 text-white"
+                       data-bs-toggle="collapse"
+                       href="#accountManagement"
+                       role="button">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Quản lý Tài khoản</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="accountManagement">
+                        <div class="submenu">
+                            <a class="nav-link" asp-area="Admin" asp-controller="KhachHangs" asp-action="Index">
+                                <i class="fas fa-users"></i>
+                                <span>Khách hàng</span>
+                            </a>
+                            <a class="nav-link" asp-area="Admin" asp-controller="NhanViens" asp-action="Index">
+                                <i class="fas fa-user-tie"></i>
+                                <span>Nhân viên</span>
+                            </a>
+                            <a class="nav-link" asp-area="Admin" asp-controller="TaiKhoans" asp-action="Index">
+                                <i class="fas fa-user-lock"></i>
+                                <span>Tài khoản</span>
                             </a>
                         </div>
                     </div>

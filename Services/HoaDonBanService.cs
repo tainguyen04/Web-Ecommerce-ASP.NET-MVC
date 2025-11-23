@@ -58,13 +58,6 @@ namespace QLCHBanDienThoaiMoi.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                Console.WriteLine($"Lỗi khi tạo hóa đơn: {ex.Message}");
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine("Chi tiết inner exception:");
-                    Console.WriteLine(ex.InnerException.Message);
-                }
-
                 Console.WriteLine(ex.StackTrace);
                 return false;
             }
