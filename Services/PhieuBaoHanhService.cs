@@ -39,9 +39,25 @@ namespace QLCHBanDienThoaiMoi.Services
         }
 
         // Tạo mới phiếu bảo hành
-        public async Task<bool> CreateAsync(PhieuBaoHanh phieu)
+        public async Task<bool> CreateAsync(int hoaDonBan)
         {
-            _context.PhieuBaoHanh.Add(phieu);
+            var chiTiet = await _context.ChiTietHoaDonBan
+                                        .Where(ct => ct.HoaDonBanId == hoaDonBan)
+                                        .Select(ct => new {ct.SanPhamId,ct.HoaDonBanId})
+                                        .Distinct()
+                                        .ToListAsync();
+            foreach (var item in chiTiet)
+            {
+                var phieu = new PhieuBaoHanh()
+                {
+                    HoaDonBanId = hoaDonBan,
+                    SanPhamId = item.SanPhamId,
+                    NgayLap = DateTime.Now,
+                    TrangThai = TrangThaiBaoHanh.DangBaoHanh
+                };
+                _context.PhieuBaoHanh.Add(phieu);
+            }
+
             return await _context.SaveChangesAsync() > 0;
         }
 
