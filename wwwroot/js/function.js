@@ -53,6 +53,16 @@ if (typeof ThongBao !== 'undefined' && ThongBao) {
         timer: 1500,
     });
 }
+// Hiển thị thông báo từ TempData
+if (typeof ThongBaoLoi !== 'undefined' && ThongBaoLoi) {
+    Swal.fire({
+        icon: 'error',
+        title: ThongBao,
+        showCancelButton: true,
+        cancelButtonText: "Ok"
+    });
+}
+
 
 
 

@@ -191,6 +191,12 @@
             var ThongBao = '@Html.Raw(TempData["SuccessMessage"])';
         </script>
     }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            var ThongBaoLoi = '@Html.Raw(TempData["ErrorMessage"])';
+        </script>
+    }
 
 
 <script src="~/js/giohang.js"></script>
