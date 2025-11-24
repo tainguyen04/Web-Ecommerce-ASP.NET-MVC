@@ -12,9 +12,10 @@ namespace QLCHBanDienThoaiMoi.Models
     }
     public enum VaiTro
     {
-        User,
-        Admin
-    }
+		KhachHang = 0,
+		NhanVien = 1,
+		Admin = 2
+	}
     public enum TrangThaiTaiKhoan
     {
         Active,
