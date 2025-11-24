@@ -28,6 +28,13 @@ namespace QLCHBanDienThoaiMoi.Controllers
 
         // POST: /Account/Login
         [HttpPost]
+        // POST: /Account/Login
+        [HttpPost]
+        // POST: /Account/Login
+[HttpPost]
+        // POST: /Account/Login
+        [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
@@ -38,40 +45,55 @@ namespace QLCHBanDienThoaiMoi.Controllers
 
             var user = await _taiKhoanService.DangNhap(username, password);
 
-            if (user == null || user.TrangThai != TrangThaiTaiKhoan.Active)
+            if (user == null)
             {
                 ViewBag.Error = "Tài khoản không tồn tại, sai mật khẩu hoặc đã bị khóa!";
                 return View();
             }
 
-            // Xác định role
-            string roleName = user.VaiTro == VaiTro.Admin ? "Admin" : "User";
-
-            var claims = new List<Claim>
+            // === TẠO ROLE NAME CHO PHÂN QUYỀN ===
+            string roleName = user.VaiTro switch
             {
-                new Claim(ClaimTypes.Name, user.TenDangNhap),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim("UserId", user.Id.ToString()),
-                new Claim("KhachHangId", user.KhachHang?.Id.ToString() ?? ""),
-                new Claim(ClaimTypes.Role, roleName)
+                VaiTro.Admin => "Admin",
+                VaiTro.Staff => "Staff",
+                _ => "User"
             };
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.TenDangNhap),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Role, roleName),
+        new Claim("UserId", user.Id.ToString())
+    };
 
-            var authProperties = new AuthenticationProperties
+            // Thêm Id nếu có
+            if (user.KhachHang != null)
+                claims.Add(new Claim("KhachHangId", user.KhachHang.Id.ToString()));
+            if (user.NhanVien != null)
+                claims.Add(new Claim("NhanVienId", user.NhanVien.Id.ToString()));
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+            var authProps = new AuthenticationProperties
             {
-                IsPersistent = true, // Remember me 30 ngày
+                IsPersistent = true,
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
             };
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
 
-            TempData["ThongBao"] = $"Chào mừng {user.TenDangNhap}! Đăng nhập thành công.";
+            // === ĐIỀU HƯỚNG THEO VAI TRÒ ===
+            string redirectUrl = user.VaiTro switch
+            {
+                VaiTro.Admin => "/Admin/",           // Vào Area Admin
+                VaiTro.Staff => "/Admin/",           // Tạm thời cho Staff vào chung Admin
+                VaiTro.User => "/",                          // Trang chủ khách hàng
+                _ => "/"
+            };
 
-            return RedirectToAction("Index", "Home");
+            TempData["ThongBao"] = $"Chào mừng {user.TenDangNhap}! ({roleName})";
+            return Redirect(redirectUrl);
         }
 
         // GET: /Account/Register
