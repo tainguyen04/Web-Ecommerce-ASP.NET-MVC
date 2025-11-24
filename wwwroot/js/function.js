@@ -53,6 +53,16 @@ if (typeof ThongBao !== 'undefined' && ThongBao) {
         timer: 1500,
     });
 }
+// Hiển thị thông báo từ TempData
+if (typeof ThongBaoLoi !== 'undefined' && ThongBaoLoi) {
+    Swal.fire({
+        icon: 'error',
+        title: ThongBao,
+        showCancelButton: true,
+        cancelButtonText: "Ok"
+    });
+}
+
 
 
 
@@ -157,3 +167,22 @@ function prepareSubmit() {
     document.getElementById('chiTietHoaDonJson').value = JSON.stringify(products);
     return true;
 }
+
+
+//Load thêm sản phẩm
+var skip = 10;
+$("#loadMoreBtn").on("click", function () {
+    $.ajax({
+        url: '@Url.Action("LoadMoreProducts", "Home")',
+        type: "GET",
+        data: { skip: skip },
+        success: function (data) {
+            if (data.trim() === "") {
+                $("#loadMoreBtn").hide();
+            } else {
+                $("#sanPhamContainer").append(data);
+                skip += 10;
+            }
+        }
+    });
+});

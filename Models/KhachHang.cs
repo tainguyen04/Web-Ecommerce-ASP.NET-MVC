@@ -11,6 +11,6 @@ public class KhachHang
 	// Navigation
 	public TaiKhoan? TaiKhoan { get; set; }
 
-	// Thêm dòng này nếu muốn có FK rõ ràng
-	public int? TaiKhoanId { get; set; }   // ← Thêm dòng này
+    public ICollection<GioHang> GioHangs { get; set; } = new List<GioHang>();
+    public ICollection<HoaDonBan> HoaDonBans { get; set; } = new List<HoaDonBan>();
 }

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using QLCHBanDienThoaiMoi.Models;
 using QLCHBanDienThoaiMoi.Services.Interfaces;
 using QLCHBanDienThoaiMoi.Helpers;
+using QLCHBanDienThoaiMoi.Services;
 
 namespace QLCHBanDienThoaiMoi.Controllers
 {
@@ -26,6 +27,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
 			return View();
 		}
 
+<<<<<<< HEAD
 		// POST: Login
 		[HttpPost]
 		public async Task<IActionResult> Login(string username, string password)
@@ -36,6 +38,15 @@ namespace QLCHBanDienThoaiMoi.Controllers
 				ViewBag.Error = "Tên đăng nhập hoặc mật khẩu không đúng!";
 				return View();
 			}
+=======
+        // ---------------------------------------------------
+        // POST: Login
+        // ---------------------------------------------------
+        [HttpPost]
+        public async Task<IActionResult> Login(string username, string password)
+        {
+            var user = await _taiKhoanService.DangNhap(username, password);
+>>>>>>> 432d01cc69ec48287ccf9595cc24b15c4b941475
 
 			// CHỖ NÀY ĐÃ SỬA: Chỉ để 1 Claim Role thôi, dùng tên chuỗi
 			string roleName = user.VaiTro switch
@@ -46,6 +57,7 @@ namespace QLCHBanDienThoaiMoi.Controllers
 				_ => "KhachHang"
 			};
 
+<<<<<<< HEAD
 			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.Name, user.TenDangNhap),
@@ -53,7 +65,23 @@ namespace QLCHBanDienThoaiMoi.Controllers
 				new Claim("UserId", user.Id.ToString()),
 				new Claim("KhachHangId", user.KhachHang?.Id.ToString() ?? ""),
 				new Claim(ClaimTypes.Role, roleName)   // ← Chỉ để dòng này thôi
+=======
+            // Tạo Claims
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.TenDangNhap),
+                new Claim(ClaimTypes.Role, user.VaiTro.ToString()),
+                new Claim("UserId", user.Id.ToString())
+>>>>>>> 432d01cc69ec48287ccf9595cc24b15c4b941475
             };
+            if(user.KhachHang != null)
+            {
+                claims.Add(new Claim("KhachHangId", user.KhachHang?.Id.ToString() ?? ""));
+            }
+            if (user.NhanVien != null)
+            {
+                claims.Add(new Claim("NhanVienId", user.NhanVien.Id.ToString()));
+            }
 
 			var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -130,9 +158,56 @@ namespace QLCHBanDienThoaiMoi.Controllers
 				return View();
 			}
 
+<<<<<<< HEAD
 			TempData["ThongBao"] = "Đăng ký thành công!";
 			return RedirectToAction("Login");
 		}
+=======
+            TempData["ThongBao"] = "Đăng ký thành công!";
+            return RedirectToAction("Login");
+        }
+        // GET: KhachHangs/Edit/5
+        public async Task<IActionResult> ChangePassword()
+        {
+            var userIdClaim = User.FindFirst("KhachHangId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                return RedirectToAction("Login", "Account");
+
+            var taiKhoan = await _taiKhoanService.GetTaiKhoanByIdAsync(userId);
+            if (taiKhoan == null)
+            {
+                return NotFound();
+            }
+            return View(taiKhoan);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword)
+        {
+
+            try
+            {
+                var userIdClaim = User.FindFirst("KhachHangId")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                    return RedirectToAction("Login","Account");
+
+                var taiKhoan = await _taiKhoanService.ChangePasswordAsync(userId,oldPassword, newPassword);
+                if (!taiKhoan)
+                {
+                    return RedirectToAction("ChangePassword", "Account");
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Đổi mật khẩu thành công";
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+>>>>>>> 432d01cc69ec48287ccf9595cc24b15c4b941475
 
 		// Đăng xuất
 		public async Task<IActionResult> Logout()

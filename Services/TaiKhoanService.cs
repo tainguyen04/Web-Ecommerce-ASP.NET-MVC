@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QLCHBanDienThoaiMoi.Data;
 using QLCHBanDienThoaiMoi.DTO;
+using QLCHBanDienThoaiMoi.Helpers;
 using QLCHBanDienThoaiMoi.Models;
 using QLCHBanDienThoaiMoi.Services.Interfaces;
 using System.Security.Cryptography;
@@ -8,6 +9,7 @@ using System.Text;
 
 namespace QLCHBanDienThoaiMoi.Services
 {
+<<<<<<< HEAD
 	public class TaiKhoanService : ITaiKhoanService
 	{
 		private readonly ApplicationDbContext _context;
@@ -18,6 +20,20 @@ namespace QLCHBanDienThoaiMoi.Services
 			_context = context;
 			_gioHangService = gioHangService;
 		}
+=======
+    public class TaiKhoanService : ITaiKhoanService
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IGioHangService _gioHangService;
+        private readonly SessionHelper _sessionHelper;
+
+        public TaiKhoanService(ApplicationDbContext context,IGioHangService gioHangService,SessionHelper sessionHelper)
+        {
+            _context = context;
+            _gioHangService = gioHangService;
+            _sessionHelper = sessionHelper;
+        }
+>>>>>>> 432d01cc69ec48287ccf9595cc24b15c4b941475
 
 		// ============================
 		// Mã hóa mật khẩu SHA256
@@ -30,6 +46,7 @@ namespace QLCHBanDienThoaiMoi.Services
 			return string.Concat(Array.ConvertAll(hash, b => b.ToString("x2")));
 		}
 
+<<<<<<< HEAD
 		// ============================
 		// Đăng nhập
 		// ============================
@@ -47,6 +64,29 @@ namespace QLCHBanDienThoaiMoi.Services
 		{
 			if (await KiemTraTenDangNhap(tk.TenDangNhap))
 				return false;
+=======
+        // ============================
+        // 🔐 Đăng nhập
+        // ============================
+        public async Task<TaiKhoan?> DangNhap(string username, string password)
+        {
+            string passHash = HashPassword(password);
+
+            var taiKhoan =  await _context.TaiKhoan
+                                    .Include(x => x.KhachHang)
+                                    .Include(x => x.NhanVien)
+                                    .FirstOrDefaultAsync(x =>
+                                        x.TenDangNhap == username &&
+                                        x.MatKhau == passHash &&
+                                        x.TrangThai == TrangThaiTaiKhoan.Active);
+            if(taiKhoan != null && taiKhoan.KhachHang != null)
+            {
+                var sessionId = _sessionHelper.EnsureSessionIdExists();
+                await _gioHangService.MergeCartAsync(sessionId, taiKhoan.KhachHang.Id);
+            }
+            return taiKhoan;
+        }
+>>>>>>> 432d01cc69ec48287ccf9595cc24b15c4b941475
 
 			tk.MatKhau = HashPasswordSHA256(tk.MatKhau);
 			tk.VaiTro = VaiTro.KhachHang;
@@ -58,8 +98,21 @@ namespace QLCHBanDienThoaiMoi.Services
 			kh.TaiKhoan = tk;
 			// hoặc nếu bạn có TaiKhoanId thì: kh.TaiKhoanId = tk.Id;
 
+<<<<<<< HEAD
 			await _context.KhachHang.AddAsync(kh);
 			await _context.SaveChangesAsync();
+=======
+            // Gán tài khoản vào khách hàng
+            kh.TaiKhoan = tk;
+            await _context.KhachHang.AddAsync(kh);
+            await _context.SaveChangesAsync();
+            //Tạo giỏ hàng
+            await _gioHangService.CreateGioHangAsync(null,kh.Id);
+            if (!string.IsNullOrEmpty(sessionId))
+                await _gioHangService.MergeCartAsync(sessionId, kh.Id);
+            return true;
+        }
+>>>>>>> 432d01cc69ec48287ccf9595cc24b15c4b941475
 
 			// Tạo giỏ hàng
 			await _gioHangService.CreateGioHangAsync(null, kh.Id);
@@ -125,6 +178,7 @@ namespace QLCHBanDienThoaiMoi.Services
 			}
 		}
 
+<<<<<<< HEAD
 		// ============================
 		// Cập nhật vai trò tài khoản (Admin dùng)
 		// ============================
@@ -212,3 +266,27 @@ namespace QLCHBanDienThoaiMoi.Services
 		}
 	}
 }
+=======
+        public async Task<bool> ResetMatKhauAsync(int id, string passWord)
+        {
+            var tk = await _context.TaiKhoan.FindAsync(id); 
+            if (tk == null) return false;
+            tk.MatKhau = HashPassword(passWord);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> ChangePasswordAsync(int id, string oldPassword, string newPassword)
+        {
+            var taiKhoan = await _context.TaiKhoan.FindAsync(id);
+            if(taiKhoan == null) return false;
+            if(string .IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword)) return false;
+            if(taiKhoan.MatKhau == HashPassword(oldPassword))
+            {
+                taiKhoan.MatKhau = HashPassword(newPassword);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            return false;
+        }
+    }
+}
+>>>>>>> 432d01cc69ec48287ccf9595cc24b15c4b941475
