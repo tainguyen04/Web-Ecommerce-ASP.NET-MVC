@@ -19,41 +19,47 @@ namespace QLCHBanDienThoaiMoi.Services
             _gioHangService = gioHangService;
         }
 
-        // ============================
-        // 🔐 Hàm mã hóa mật khẩu
-        // ============================
-        private string HashPassword(string password)
-        {
-            using SHA256 sha = SHA256.Create();
-            byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(bytes);
-        }
+		// ============================
+		// 🔐 Hàm mã hóa mật khẩu
+		// ============================
+		public static string HashPasswordSHA256(string password)
+		{
+			using (var sha = SHA256.Create())
+			{
+				var bytes = Encoding.UTF8.GetBytes(password);
+				var hash = sha.ComputeHash(bytes);
 
-        // ============================
-        // 🔐 Đăng nhập
-        // ============================
-        public TaiKhoan? DangNhap(string username, string password)
-        {
-            string passHash = HashPassword(password);
+				// Convert to hex
+				StringBuilder sb = new StringBuilder();
+				foreach (var b in hash)
+					sb.Append(b.ToString("x2"));
 
-            return _context.TaiKhoan
-                .Include(x => x.KhachHang)
-                .Include(x => x.NhanVien)
-                .FirstOrDefault(x =>
-                    x.TenDangNhap == username &&
-                    x.MatKhau == passHash &&
-                    x.TrangThai == TrangThaiTaiKhoan.Active);
-        }
+				return sb.ToString();
+			}
+		}
 
-        // ============================
-        // 📝 Đăng ký tài khoản khách hàng
-        // ============================
-        public async Task<bool> DangKyAsync(TaiKhoan tk, KhachHang kh,string sessionId)
+		// ============================
+		// 🔐 Đăng nhập
+		// ============================
+		public TaiKhoan? DangNhap(string username, string password)
+		{
+			string hashed = HashPasswordSHA256(password);
+
+			return _context.TaiKhoan
+				.FirstOrDefault(t => t.TenDangNhap == username
+								  && t.MatKhau == hashed);
+		}
+
+
+		// ============================
+		// 📝 Đăng ký tài khoản khách hàng
+		// ============================
+		public async Task<bool> DangKyAsync(TaiKhoan tk, KhachHang kh,string sessionId)
         {
             if (await KiemTraTenDangNhap(tk.TenDangNhap))
                 return false;
 
-            tk.MatKhau = HashPassword(tk.MatKhau);
+            tk.MatKhau = HashPasswordSHA256(tk.MatKhau);
             tk.VaiTro = VaiTro.User;
 
             await _context.TaiKhoan.AddAsync(tk);
@@ -103,7 +109,7 @@ namespace QLCHBanDienThoaiMoi.Services
                 
                 var existingTaiKhoan = await _context.TaiKhoan.AnyAsync(tk => tk.TenDangNhap == taiKhoan.TenDangNhap);
                 if (existingTaiKhoan) return false;
-                taiKhoan.MatKhau = HashPassword(taiKhoan.MatKhau);
+                taiKhoan.MatKhau = HashPasswordSHA256(taiKhoan.MatKhau);
                 if (taiKhoan.VaiTro == VaiTro.User)
                     taiKhoan.KhachHang = new KhachHang();
                 else if(taiKhoan.VaiTro == VaiTro.Admin)
@@ -189,7 +195,7 @@ namespace QLCHBanDienThoaiMoi.Services
         {
             var tk = await _context.TaiKhoan.FindAsync(id); 
             if (tk == null) return false;
-            tk.MatKhau = HashPassword(passWord);
+            tk.MatKhau = HashPasswordSHA256(passWord);
             return await _context.SaveChangesAsync() > 0;
         }
     }
