@@ -31,15 +31,15 @@ namespace QLCHBanDienThoaiMoi.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var userIdClaim = User.FindFirst("KhachHangId")?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            var userId = _sessionHelper.GetUserIdFromClaim();
+            if(userId == null)
                 return RedirectToAction("Login", "Account");
-            return View(await _hoaDonBanService.GetHoaDonBanByUserAsync(userId));
+            return View(await _hoaDonBanService.GetHoaDonBanByUserAsync(userId.Value));
         }
         public async Task<IActionResult> Details(int id)
         {
-            var userIdClaim = User.FindFirst("KhachHangId")?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            var userId = _sessionHelper.GetUserIdFromClaim();
+            if (userId == null)
                 return RedirectToAction("Index", "Account");
             var hd = await _hoaDonBanService.GetHoaDonBanAsync(id);
             if(hd == null) return NotFound();
@@ -50,8 +50,8 @@ namespace QLCHBanDienThoaiMoi.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-            var userIdClaim = User.FindFirst("KhachHangId")?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            var userId = _sessionHelper.GetUserIdFromClaim();
+            if (userId == null)
                 return RedirectToAction("Login", "Account");
             var hd = await _hoaDonBanService.GetHoaDonBanAsync(id); 
             if(hd == null) return NotFound();
@@ -63,15 +63,15 @@ namespace QLCHBanDienThoaiMoi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,string diaChiNhanHang)
         {
-            var userIdClaim = User.FindFirst("KhachHangId")?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            var userId = _sessionHelper.GetUserIdFromClaim();
+            if (userId == null)
                 return RedirectToAction("Login", "Account");
             if (string.IsNullOrWhiteSpace(diaChiNhanHang))
             {
                 TempData["ErrorMessage"] = "Địa chỉ không được để trống";
                 return View();
             }
-            var hoaDon = await _hoaDonBanService.UpdateDiaChiNhanHangAsync(id, userId, diaChiNhanHang);
+            var hoaDon = await _hoaDonBanService.UpdateDiaChiNhanHangAsync(id, userId.Value, diaChiNhanHang);
                 if (!hoaDon)
                 {
                     return NotFound();
@@ -92,7 +92,8 @@ namespace QLCHBanDienThoaiMoi.Controllers
         public async Task<IActionResult> Create(string selectedCartItems)
         {
             var userId = _sessionHelper.GetUserIdFromClaim();
-            if (userId == null) return RedirectToAction("Login", "Account");
+            if (userId == null) 
+                return RedirectToAction("Login", "Account");
 
             if (string.IsNullOrEmpty(selectedCartItems))
                 return RedirectToAction("Index", "GioHangs");
