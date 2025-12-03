@@ -209,5 +209,17 @@ namespace QLCHBanDienThoaiMoi.Services
             tk.MatKhau = HashPasswordSHA256(passWord);
             return await _context.SaveChangesAsync() > 0;
         }
+        public async Task<bool> ChangePasswordAsync(int id, string oldPassword, string newPassword)
+        {
+            var taiKhoan = await _context.TaiKhoan.FindAsync(id);
+            if (taiKhoan == null) return false;
+            if (string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword)) return false;
+            if (taiKhoan.MatKhau == HashPasswordSHA256(oldPassword))
+            {
+                taiKhoan.MatKhau = HashPasswordSHA256(newPassword);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            return false;
+        }
     }
 }

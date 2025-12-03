@@ -101,8 +101,6 @@ namespace QLCHBanDienThoaiMoi.Services
                 existingSanPham.HinhAnh = newFileName;
             }
             sanPham.HinhAnh = existingSanPham.HinhAnh;
-            // Cập nhật các thuộc tính trước khi xử lý ảnh
-            _context.Entry(existingSanPham).CurrentValues.SetValues(sanPham);
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }
@@ -181,10 +179,6 @@ namespace QLCHBanDienThoaiMoi.Services
 
             return fileName;
         }
-        public SanPhamService(ApplicationDbContext context)
-        {
-            _context = context;
-        }
 
         public async Task<IEnumerable<SanPham>> SearchAsync(string keyword)
         {
@@ -219,26 +213,25 @@ namespace QLCHBanDienThoaiMoi.Services
 
         public async Task<List<SanPhamDTO>> GetSanPhamSkipTakeAsync(int skip, int take)
         {
-            var sp = await _context.SanPham
-                                       .Include(s => s.KhuyenMai)
-                                       .AsNoTracking()
-                                       .ToListAsync();
-            return sp.Select(s => new SanPhamDTO
-                            {
-                                Id = s.Id,
-                                TenSanPham = s.TenSanPham,
-                                GiaBan = s.GiaBan,
-                                HangSanXuat = s.HangSanXuat,
-                                MoTa = s.MoTa,
-                                HinhAnh = s.HinhAnh,
-                                TenKhuyenMai = s.KhuyenMai != null ? s.KhuyenMai.TenKhuyenMai : string.Empty,
-                                GiaKhuyenMai = s.KhuyenMai != null ? (decimal)s.GiaBan * (1 - s.KhuyenMai.GiaTri / 100) : s.GiaBan,
-                                PhanTramKhuyenMai = s.KhuyenMai != null ? s.KhuyenMai.GiaTri : 0
-                            })
-                            .OrderByDescending(s => s.PhanTramKhuyenMai)
-                            .Skip(skip)
-                            .Take(take)
-                            .ToList();
+            return await _context.SanPham
+                                .Include(s => s.KhuyenMai)
+                                .AsNoTracking()
+                                .Select(s => new SanPhamDTO
+                                {
+                                    Id = s.Id,
+                                    TenSanPham = s.TenSanPham,
+                                    GiaBan = s.GiaBan,
+                                    HangSanXuat = s.HangSanXuat,
+                                    MoTa = s.MoTa,
+                                    HinhAnh = s.HinhAnh,
+                                    TenKhuyenMai = s.KhuyenMai != null ? s.KhuyenMai.TenKhuyenMai : string.Empty,
+                                    GiaKhuyenMai = s.KhuyenMai != null ? (decimal)s.GiaBan * (1 - s.KhuyenMai.GiaTri / 100) : s.GiaBan,
+                                    PhanTramKhuyenMai = s.KhuyenMai != null ? s.KhuyenMai.GiaTri : 0
+                                })
+                                .OrderByDescending(s => s.PhanTramKhuyenMai)
+                                .Skip(skip)
+                                .Take(take)
+                                .ToListAsync();
         }
     }
 }

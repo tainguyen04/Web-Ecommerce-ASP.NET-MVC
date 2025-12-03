@@ -16,5 +16,6 @@ namespace QLCHBanDienThoaiMoi.Services.Interfaces
         Task<bool> DeleteTaiKhoanAsync(int? id);
         Task<bool> LockTaiKhoanAsync(int id);
         Task<bool> UnlockTaiKhoanAsync(int id);
+        Task<bool> ChangePasswordAsync(int id, string oldPassword, string newPassword);
     }
 }

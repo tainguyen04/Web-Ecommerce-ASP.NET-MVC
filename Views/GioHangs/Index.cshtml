@@ -31,8 +31,8 @@
                             <input type="checkbox" id="select-all" class="form-check-input me-2" />
                             <span class="small fw-semibold">Chọn tất cả</span>
                         </th>
-                        <th>Hình ảnh</th>
                         <th>STT</th>
+                        <th>Hình ảnh</th>
                         <th>Tên sản phẩm</th>
                         <th>Giá</th>
                         <th>Số lượng</th>
@@ -61,10 +61,10 @@
                             <td class="text-end fw-bold text-danger">@Html.FormatPrice(totalPrice)</td>
                             <td>
                                 <form asp-action="Delete" method="post" class="d-inline">
-                                    <input type="hidden" name="SanPhamId" value="@item.SanPhamId" />
+                                    <input type="hidden" name="sanPhamId" value="@item.SanPhamId" />
                                     <button type="button" class="btn btn-outline-danger"
                                             id="delete-btn"
-                                            onclick="confirmDeleted(event,this,'@item.TenSanPham')">
+                                            onclick="confirmDeleted(this,'@item.TenSanPham')">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
@@ -80,7 +80,10 @@
             <div>
                 <h6 class="mb-1">Tổng tiền sản phẩm đã chọn:</h6>
                 <h5 id="selectedTotal" class="text-danger fw-bold">@Html.FormatPrice(0)</h5>
+                <h6 class="mb-1">Số sản phẩm đã chọn:</h6>
+                <h5 id="selectedCount" class="fw-bold">0</h5>
             </div>
+
             <form method="get" asp-action="Create" asp-controller="HoaDonBans" id="checkoutForm">
                 <input type="hidden" name="selectedCartItems" id="selectedCartItems" />
                 <button type="submit" class="btn btn-success btn-lg">

@@ -201,8 +201,23 @@
             var ThongBaoLoi = '@Html.Raw(TempData["ErrorMessage"])';
         </script>
     }
+    <script>
+        $(document).ready(function () {
+            var skip = 10;
+            var loadMoreUrl = '@Url.Action("LoadMoreProducts", "Home")'; // Razor render ra URL
 
-
+            $("#loadMoreBtn").on("click", function () {
+                $.get(loadMoreUrl, { skip: skip }, function (data) {
+                    if (data.trim() === "") {
+                        $("#loadMoreBtn").hide();
+                    } else {
+                        $("#sanPhamContainer").append(data);
+                        skip += 10;
+                    }
+                });
+            });
+        });
+    </script>
 <script src="~/js/giohang.js"></script>
 <script src="~/js/function.js" asp-append-version="true"></script>
 

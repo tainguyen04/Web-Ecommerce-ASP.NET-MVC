@@ -60,12 +60,12 @@ namespace QLCHBanDienThoaiMoi.Controllers
             };
 
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, user.TenDangNhap),
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Role, roleName),
-        new Claim("UserId", user.Id.ToString())
-    };
+                    {
+                        new Claim(ClaimTypes.Name, user.TenDangNhap),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.Role, roleName),
+                        new Claim("UserId", user.Id.ToString())
+                    };
 
             // Thêm Id nếu có
             if (user.KhachHang != null)
@@ -161,6 +161,47 @@ namespace QLCHBanDienThoaiMoi.Controllers
 
             TempData["ThongBao"] = "Đăng ký thành công! Bạn có thể đăng nhập ngay.";
             return RedirectToAction("Login");
+        }
+        // GET: KhachHangs/Edit/5
+        public async Task<IActionResult> ChangePassword()
+        {
+            var userIdClaim = User.FindFirst("KhachHangId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                return RedirectToAction("Login", "Account");
+
+            var taiKhoan = await _taiKhoanService.GetTaiKhoanByIdAsync(userId);
+            if (taiKhoan == null)
+            {
+                return NotFound();
+            }
+            return View(taiKhoan);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword)
+        {
+
+            try
+            {
+                var userId = _sessionHelper.GetUserIdFromClaim();
+                if(userId == null)
+                    return RedirectToAction("Login", "Account");
+
+                var taiKhoan = await _taiKhoanService.ChangePasswordAsync(userId.Value, oldPassword, newPassword);
+                if (!taiKhoan)
+                {
+                    return RedirectToAction("ChangePassword", "Account");
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Đổi mật khẩu thành công";
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         // Đăng xuất
