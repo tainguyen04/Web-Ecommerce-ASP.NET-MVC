@@ -56,7 +56,7 @@
         @await Html.PartialAsync("_SanPhamCardPartial", Model.SanPham.Take(10))
     </div>
 
-    @if (Model.SanPham.Count > 10)
+    @if (Model.SanPham.Count >= 10)
     {
         <div class="text-center mt-3">
             <button id="loadMoreBtn" class="btn btn-outline-primary">Xem thêm</button>

@@ -157,13 +157,13 @@ namespace QLCHBanDienThoaiMoi.Services
         public async Task<bool> DeletedSanPhamFromGioHangAsync(string? sessionId, int? khachHangId, int sanPhamId)
         {
             var query = _context.ChiTietGioHang.Include(ct => ct.GioHang).AsQueryable();
-            if (!string.IsNullOrEmpty(sessionId))
-            {
-                query = query.Where(ct => ct.GioHang.SessionId == sessionId);
-            }
-            else if (khachHangId.HasValue)
+            if (khachHangId.HasValue)
             {
                 query = query.Where(ct => ct.GioHang.KhachHangId == khachHangId.Value);
+            }
+            else if (!string.IsNullOrEmpty(sessionId))
+            {
+                query = query.Where(ct => ct.GioHang.SessionId == sessionId);
             }
             else
             {

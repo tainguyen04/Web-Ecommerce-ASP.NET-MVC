@@ -5,7 +5,6 @@ using System.Security.Claims;
 using QLCHBanDienThoaiMoi.Models;
 using QLCHBanDienThoaiMoi.Services.Interfaces;
 using QLCHBanDienThoaiMoi.Helpers;
-using QLCHBanDienThoaiMoi.Services;
 
 namespace QLCHBanDienThoaiMoi.Controllers
 {
@@ -14,80 +13,97 @@ namespace QLCHBanDienThoaiMoi.Controllers
         private readonly ITaiKhoanService _taiKhoanService;
         private readonly SessionHelper _sessionHelper;
 
-        public AccountController(ITaiKhoanService taiKhoanService,SessionHelper sessionHelper)
+        public AccountController(ITaiKhoanService taiKhoanService, SessionHelper sessionHelper)
         {
             _taiKhoanService = taiKhoanService;
             _sessionHelper = sessionHelper;
         }
 
-        // ---------------------------------------------------
-        // GET: Login
-        // ---------------------------------------------------
+        // GET: /Account/Login
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // ---------------------------------------------------
-        // POST: Login
-        // ---------------------------------------------------
+        // POST: /Account/Login
+        [HttpPost]
+        // POST: /Account/Login
+        [HttpPost]
+        // POST: /Account/Login
+[HttpPost]
+        // POST: /Account/Login
+        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                ViewBag.Error = "Vui lòng nhập tên đăng nhập và mật khẩu!";
+                return View();
+            }
+
             var user = await _taiKhoanService.DangNhap(username, password);
 
             if (user == null)
             {
-                ViewBag.Error = "Tên đăng nhập hoặc mật khẩu không đúng!";
+                ViewBag.Error = "Tài khoản không tồn tại, sai mật khẩu hoặc đã bị khóa!";
                 return View();
             }
 
-            // Tạo Claims
-            var claims = new List<Claim>
+            // === TẠO ROLE NAME CHO PHÂN QUYỀN ===
+            string roleName = user.VaiTro switch
             {
-                new Claim(ClaimTypes.Name, user.TenDangNhap),
-                new Claim(ClaimTypes.Role, user.VaiTro.ToString()),
-                new Claim("UserId", user.Id.ToString())
+                VaiTro.Admin => "Admin",
+                VaiTro.Staff => "Staff",
+                _ => "User"
             };
-            if(user.KhachHang != null)
-            {
-                claims.Add(new Claim("KhachHangId", user.KhachHang?.Id.ToString() ?? ""));
-            }
+
+            var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.TenDangNhap),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.Role, roleName),
+                        new Claim("UserId", user.Id.ToString())
+                    };
+
+            // Thêm Id nếu có
+            if (user.KhachHang != null)
+                claims.Add(new Claim("KhachHangId", user.KhachHang.Id.ToString()));
             if (user.NhanVien != null)
-            {
                 claims.Add(new Claim("NhanVienId", user.NhanVien.Id.ToString()));
-            }
 
-            // Tạo danh tính
-            var claimsIdentity = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme
-            );
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+            var authProps = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
+            };
 
-            // Đăng nhập bằng Cookie Auth
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity)
-            );
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
 
-            TempData["ThongBao"] = "Đăng nhập thành công";
+            // === ĐIỀU HƯỚNG THEO VAI TRÒ ===
+            string redirectUrl = user.VaiTro switch
+            {
+                VaiTro.Admin => "/Admin/",           // Vào Area Admin
+                VaiTro.Staff => "/Admin/",           // Tạm thời cho Staff vào chung Admin
+                VaiTro.User => "/",                          // Trang chủ khách hàng
+                _ => "/"
+            };
 
-            return RedirectToAction("Index", "Home");
+            TempData["ThongBao"] = $"Chào mừng {user.TenDangNhap}! ({roleName})";
+            return Redirect(redirectUrl);
         }
 
-        // ---------------------------------------------------
-        // GET: Register
-        // ---------------------------------------------------
+        // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // ---------------------------------------------------
-        // POST: Register
-        // ---------------------------------------------------
+        // POST: /Account/Register
         [HttpPost]
         public async Task<IActionResult> Register(
             string username,
@@ -96,10 +112,16 @@ namespace QLCHBanDienThoaiMoi.Controllers
             string tenKH,
             string diachi,
             string sdt,
-            string email
-        )
+            string email)
         {
-            var sessionId = _sessionHelper.EnsureSessionIdExists();
+            if (string.IsNullOrWhiteSpace(username) ||
+                string.IsNullOrWhiteSpace(password) ||
+                string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                ViewBag.Error = "Vui lòng nhập đầy đủ thông tin bắt buộc!";
+                return View();
+            }
+
             if (password != confirmPassword)
             {
                 ViewBag.Error = "Mật khẩu xác nhận không khớp!";
@@ -112,30 +134,32 @@ namespace QLCHBanDienThoaiMoi.Controllers
                 return View();
             }
 
-            var tk = new TaiKhoan
+            var taiKhoan = new TaiKhoan
             {
                 TenDangNhap = username,
-                MatKhau = password,
-                VaiTro = VaiTro.User
+                MatKhau = password, // Service sẽ tự hash
+                VaiTro = VaiTro.User,
+                TrangThai = TrangThaiTaiKhoan.Active
             };
 
-            var kh = new KhachHang
+            var khachHang = new KhachHang
             {
                 TenKhachHang = tenKH,
                 DiaChi = diachi,
-                Email = email,
-                SoDienThoai = sdt
+                SoDienThoai = sdt,
+                Email = email
             };
 
-            bool success = await _taiKhoanService.DangKyAsync(tk, kh, sessionId);
+            var sessionId = _sessionHelper.EnsureSessionIdExists();
+            bool success = await _taiKhoanService.DangKyAsync(taiKhoan, khachHang, sessionId);
 
             if (!success)
             {
-                ViewBag.Error = "Không thể đăng ký. Vui lòng thử lại!";
+                ViewBag.Error = "Đăng ký thất bại. Vui lòng thử lại!";
                 return View();
             }
 
-            TempData["ThongBao"] = "Đăng ký thành công!";
+            TempData["ThongBao"] = "Đăng ký thành công! Bạn có thể đăng nhập ngay.";
             return RedirectToAction("Login");
         }
         // GET: KhachHangs/Edit/5
@@ -159,11 +183,11 @@ namespace QLCHBanDienThoaiMoi.Controllers
 
             try
             {
-                var userIdClaim = User.FindFirst("KhachHangId")?.Value;
-                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-                    return RedirectToAction("Login","Account");
+                var userId = _sessionHelper.GetUserIdFromClaim();
+                if(userId == null)
+                    return RedirectToAction("Login", "Account");
 
-                var taiKhoan = await _taiKhoanService.ChangePasswordAsync(userId,oldPassword, newPassword);
+                var taiKhoan = await _taiKhoanService.ChangePasswordAsync(userId.Value, oldPassword, newPassword);
                 if (!taiKhoan)
                 {
                     return RedirectToAction("ChangePassword", "Account");
@@ -180,12 +204,12 @@ namespace QLCHBanDienThoaiMoi.Controllers
             }
         }
 
-        // ---------------------------------------------------
         // Đăng xuất
-        // ---------------------------------------------------
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            TempData["ThongBao"] = "Bạn đã đăng xuất thành công!";
             return RedirectToAction("Login");
         }
     }
